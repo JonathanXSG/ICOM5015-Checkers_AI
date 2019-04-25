@@ -14,5 +14,7 @@ public class Main {
 		Checkerboard board = new Checkerboard();
 		myFrame.add(board);
 		myFrame.setVisible(true);
+		
+		Board test = new Board(8);
 	}
 }

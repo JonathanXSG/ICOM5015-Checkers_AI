@@ -63,7 +63,7 @@ public class Node {
 	 * Method for setting a state to the current node
 	 * @param stateSet the state that is going to be the set to the node
 	 */
-	public void setState(Board boarSet){
+	public void setState(Board boardSet){
 		board = boardSet;
 	}
 	
