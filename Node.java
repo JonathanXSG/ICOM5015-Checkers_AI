@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class Node {
 	
-//	private Puzzle state;
+	private Board state;
 	private Board board;
 	private int value;
 	private Node parentNode;
@@ -17,14 +17,11 @@ public class Node {
 	
 	/**
 	 * Constructor for creating a Node object 
-	 * @param currentState State of the puzzle at the current time
+	 * @param currentBoard State of the board at the current time
 	 * @param parent Parent of the current Node (null if it is the first node)
-	 * @param action Action taken by a parent node after finding the best rational choice (left, right, up, down)
-	 * @param coordinates Final coordinates of the movement done in the puzzle
+	 * @param coordinates Coordinates of the movement done in the Board
 	 */
 	public Node(Node parent,  Pair<Integer,Integer> coordinates, int nodeValue, Board currentBoard) {
-		// TODO Auto-generated constructor stub
-		//state = currentState;
 		board = currentBoard;
 		value = nodeValue;
 		parentNode = parent;
@@ -42,14 +39,7 @@ public class Node {
 	public Node getParentNode(){
 		return parentNode;
 	}
-	
-	/**
-	 * Method for setting the parent of the current node
-	 * @param parent Node that is going to be the parent of the current node
-	 */
-	public void setParentNode(Node parent){
-		parentNode = parent;
-	}
+
 	
 	/**
 	 * Method for getting the state of the puzzle at the current node
@@ -61,46 +51,38 @@ public class Node {
 	
 	/**
 	 * Method for setting a state to the current node
-	 * @param stateSet the state that is going to be the set to the node
+	 * @param state the state that is going to be the set to the node
 	 */
-	public void setState(Board boarSet){
-		board = boardSet;
+	public void setState(Board state){
+		board = state;
 	}
-	
-	/**
-	 * Method for getting the total cost of the path traversed until the current node
-	 * @return the sum of the costs incurred in the path to this node
-	 */
-//	public int getPathCost(){
-//		return state.getgCost() + state.gethCost();
-//	}
 
 	/**
-	 * Method for getting the action done by the parent to get to this node
+	 * Method for getting the value of the current state
 	 * @return Movement done by the parent node (left, right, up, down) 
 	 */
-	public int getAction(){
+	public int setValue(){
 		return value;
 	}
 	
 	/**
-	 * Method for setting the action done to particular node
-	 * @param action String of the action to be set
+	 * Method for setting the value of the current state
+	 * @param newValue integer value of this state
 	 */
 	public void setValue(int newValue){
 		value = newValue;
 	}
 	
 	/**
-	 * Method for getting the final coordinates of movement done in the parent node's puzzle state
-	 * @return pair of end coordinates (x,y) of the movement done 
+	 * Method for getting the final coordinates of movement done in the state
+	 * @return pair of coordinates (x,y) of the movement done
 	 */
 	public Pair<Integer, Integer> getCoordinates(){
 		return coordinatesMove;
 	}
 	
 	/**
-	 * Method for setting final coordinates of movement to the node
+	 * Method for setting coordinates of move taken in the node
 	 * @param coordinates pair of coordinates to be set to the node
 	 */
 	public void setCoordinates(Pair<Integer, Integer> coordinates){
