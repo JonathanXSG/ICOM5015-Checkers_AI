@@ -1,4 +1,5 @@
 import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * Class for holding information about the steps taken in Solving the puzzle 
@@ -13,7 +14,8 @@ public class Node {
 	private int value;
 	private Node parentNode;
 //	private String actionTaken;
-	private Pair<Integer,Integer> coordinatesMove;
+	private ArrayList<Node> childrenNodes;
+//	private Pair<Integer,Integer> coordinatesMove;
 	
 	/**
 	 * Constructor for creating a Node object 
@@ -21,12 +23,13 @@ public class Node {
 	 * @param parent Parent of the current Node (null if it is the first node)
 	 * @param coordinates Coordinates of the movement done in the Board
 	 */
-	public Node(Node parent,  Pair<Integer,Integer> coordinates, int nodeValue, Board currentBoard) {
+	public Node(ArrayList<Node> children,  Node parent, int nodeValue, Board currentBoard) {
 		board = currentBoard;
 		value = nodeValue;
 		parentNode = parent;
 //		actionTaken = action;
-		coordinatesMove = coordinates;
+		childrenNodes = children ;
+//		coordinatesMove = coordinates;
 	}
 
 	public Node() {
@@ -36,9 +39,9 @@ public class Node {
 	 * Method for finding the node that is the parent of the current node
 	 * @return Current Node's Parent Node
 	 */
-	public Node getParentNode(){
-		return parentNode;
-	}
+//	public Node getParentNode(){
+//		return parentNode;
+//	}
 
 	
 	/**
@@ -61,7 +64,7 @@ public class Node {
 	 * Method for getting the value of the current state
 	 * @return Movement done by the parent node (left, right, up, down) 
 	 */
-	public int setValue(){
+	public int getValue(){
 		return value;
 	}
 	
@@ -73,21 +76,26 @@ public class Node {
 		value = newValue;
 	}
 	
+	public void addChild(Node child){
+		childrenNodes.add(child);
+	}
+	
+	
 	/**
 	 * Method for getting the final coordinates of movement done in the state
 	 * @return pair of coordinates (x,y) of the movement done
 	 */
-	public Pair<Integer, Integer> getCoordinates(){
-		return coordinatesMove;
-	}
+//	public Pair<Integer, Integer> getCoordinates(){
+//		return coordinatesMove;
+//	}
 	
 	/**
 	 * Method for setting coordinates of move taken in the node
 	 * @param coordinates pair of coordinates to be set to the node
 	 */
-	public void setCoordinates(Pair<Integer, Integer> coordinates){
-		coordinatesMove = coordinates;
-	}
+//	public void setCoordinates(Pair<Integer, Integer> coordinates){
+//		coordinatesMove = coordinates;
+//	}
 
 //    @Override
 //    public boolean equals(Object o) {
