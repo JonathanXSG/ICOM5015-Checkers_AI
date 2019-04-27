@@ -22,12 +22,17 @@ public class Main {
         // Fails because we can't move another player's Piece
         System.out.println(test.makeMove(Piece.Black, new Pair<>(0,7), new Pair<>(1,1)));
         // Successfully moving own Piece
-        System.out.println(test.makeMove(Piece.Red, new Pair<>(0,7), new Pair<>(0,5)));
+        System.out.println(test.makeMove(Piece.Red, new Pair<>(0,7), new Pair<>(2,3)));
         // Showing how a King is made
         System.out.println(test.makeMove(Piece.Black, new Pair<>(0,1), new Pair<>(0,7)));
-        test.printBoard();
+		System.out.println(test.makeMove(Piece.Red, new Pair<>(2,3), new Pair<>(2,3)));
+
+		test.printBoard();
         // Calculation initial piece values
         printArray(test.calcValues(Piece.Black));
+
+		System.out.println(test.evaluationFunction(Piece.Black));
+
     }
 
     private static void printArray(int[][] array){
