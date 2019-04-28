@@ -313,13 +313,15 @@ public class Board {
     }
     
     public void createTree1(int depth, ArrayList<Node> tree, Piece player, Board board, Node root){
+    	int Min = -1000;
+    	int Max = 1000;
     	if(depth == 3){
     		root.setValue(board.evaluationFunction(player));
     		tree.add(root);
     		return;
     	}else{
     		//Node root;
-    		Node child;
+    		Node child = null;
     		//ArrayList<Node> children = new ArrayList<Node>();
     		ArrayList<Pair<Integer,Integer>> pieces = getAllPieceLocations(player);
     		ArrayList<Pair<Integer,Integer>> sequence = new ArrayList<>();
@@ -336,14 +338,23 @@ public class Board {
     				for(int j = 0; j < sequence.size(); j++){
     					ArrayList<Node> children1 = new ArrayList<Node>();
     					hypotheticalBoard.makeMove(player, pieces.get(i),  sequence.get(i));
-    					child = new Node(children1, root, 0,hypotheticalBoard);
+    					if(player == Piece.Black){
+    						child = new Node(children1, root, Max,hypotheticalBoard);
+    					}else{
+    						child = new Node(children1, root, Min,hypotheticalBoard);
+    					}
+    					
     					root.addChild(child);;
     				}
     			}else{
     				for(int h = 0; h<moves.size(); h++){
     					ArrayList<Node> children1 = new ArrayList<Node>();
     					hypotheticalBoard.makeMove(player, pieces.get(h),  moves.get(h));
-    					child = new Node(children1, root, 0, hypotheticalBoard);
+    					if(player == Piece.Black){
+    						child = new Node(children1, root, Max,hypotheticalBoard);
+    					}else{
+    						child = new Node(children1, root, Min,hypotheticalBoard);
+    					}
     					root.addChild(child);
     				}
     			}
