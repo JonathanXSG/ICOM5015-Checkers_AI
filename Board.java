@@ -346,18 +346,16 @@ public class Board {
     					root.addChild(child);
     				}
     			}
-    			tree.add(root);
-    			if(player == Piece.Black){
-    				player = Piece.Red;
-    			}else{
-    				player = Piece.Black;
-    			}
-    			for(int k = 0; k < root.childrenNum(); k++){
-    				createTree1(depth+1, tree, player, hypotheticalBoard, root.child(k));
-    			}
-    			
     		}
-    		
+    		tree.add(root);
+			if(player == Piece.Black){
+				player = Piece.Red;
+			}else{
+				player = Piece.Black;
+			}
+			for(int k = 0; k < root.childrenNum(); k++){
+				createTree1(depth+1, tree, player, hypotheticalBoard, root.child(k));
+			}
 //    			ArrayList<Pair<Integer,Integer>> moves = getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY);
 //    			ArrayList<Pair<Integer,Integer>> captures = getValidJumps(pieces.get(i).posX, pieces.get(i).posY, player, true);
 //    			moves.addAll(captures);

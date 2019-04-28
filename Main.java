@@ -33,6 +33,14 @@ public class Main {
         //test.getNormalMoves(3, 2, Piece.Black);
         ArrayList<Pair<Integer,Integer>> sequence = new ArrayList<>();
 //        getChainMoves(3, 2, Piece.Black, test.isPieceKing(3,2), sequence,1);
+        ArrayList<Node> tree = new ArrayList<Node>();
+        ArrayList<Node> children = new ArrayList<Node>();
+        Node root = new Node(children, null, 0, test);
+        test.createTree1(0, tree, Piece.Red, test,root);
+        System.out.println(tree.size());
+//        for(int j = 0; j < tree.size(); j++){
+//        	tree.get(j).getState().printBoard();
+//        }
         ArrayList<Pair<Integer,Integer>> pieces =  test.getAllPieceLocations(Piece.Black);
         System.out.println("All moves from Black player");
         for(int i = 0; i < pieces.size(); i++){
