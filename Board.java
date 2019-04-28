@@ -35,6 +35,18 @@ public class Board {
         setBoardValues();
     }
 
+    public Board(Board board) {
+        this.size = board.boardState.length;
+        boardState = new char[size][size];
+        boardValues = new int[size][size];
+        for(int y=0; y<size; y++){
+            for(int x=0; x<size; x++){
+                boardState[x][y] = board.boardState[x][y];
+                boardValues[x][y] = board.boardValues[x][y];
+            }
+        }
+    }
+
 	private void setBoardValues(){
 		int value = 4,  minCol = 0, maxCol = size-1, minRow = 0, maxRow = size-1;
 		while(value > 0){
@@ -77,14 +89,6 @@ public class Board {
                     boardState[x][y] = ' ';
             }
         }
-//		for(int i = 0; i<size; i++){
-//			for(int j = 0; j < 3; j++){
-//				if((i+j)%2 != 0){
-//					boardState[i][j] = 'R';
-//					boardState[i][size-1-j] = 'B';
-//				}
-//			}
-//		}
 	}
 
 	//TODO: Implement checking if a move is valid in terms of diagonal move or jumping over piece
@@ -143,10 +147,6 @@ public class Board {
         }
         offensiveJumps *= CAPTURE_VALUE;
         defensiveJumps *= -CAPTURE_VALUE;
-
-        System.out.println("Points from Pieces values= "+values);
-        System.out.println("Points from offensive Jumps= "+offensiveJumps);
-        System.out.println("Points from defensive Jumps= "+defensiveJumps);
 
         return values+offensiveJumps+defensiveJumps;
     }
@@ -253,73 +253,6 @@ public class Board {
     	return moves;
     	
     }
-    
-//    public  void getChainMoves(int x, int y, Piece player, Board board, ArrayList<Pair<Integer,Integer>> jumps, int pieces, ArrayList<ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>> moves, ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> sequence){
-//    	if(pieces == 0){
-//    		moves.add(sequence);
-//    		//sequence.remove(sequence.size()-1);
-//    		return;
-//    	}else{
-//    		//ArrayList<Pair<Integer,Integer>> jumps = getValidJumps(x, y, player, true);
-//    		//ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> sequence = new ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>();
-//    		
-//    		if(sequence.size() > 1){
-//    			sequence.remove(sequence.size()-1);
-//    		}
-//
-//    			Pair<Pair<Integer,Integer>, Pair<Integer,Integer>> move;
-//        		Board hypotheticalBoard = board;
-//        		Pair<Integer, Integer> initCord = new Pair<>(x,y);
-//        		hypotheticalBoard.makeMove(player, initCord, jumps.get(pieces-1));
-//        		ArrayList<Pair<Integer,Integer>> extraJumps = getValidJumps(jumps.get(pieces-1).posX, jumps.get(pieces-1).posY, player, true);
-//        		if(extraJumps.size() > 0){
-//        			move = new Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>(initCord,jumps.get(pieces-1));
-//        			sequence.add(move);
-//        			//surroudingPieces = extraJumps;
-//        			getChainMoves(jumps.get(pieces-1).posX, jumps.get(pieces-1).posY, player, hypotheticalBoard, extraJumps, extraJumps.size(), moves, sequence);
-//        		}else{
-//        			move = new Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>(initCord,jumps.get(pieces-1));
-//        			sequence.add(move);
-//        			getChainMoves(x, y, player, hypotheticalBoard, jumps, pieces-1, moves, sequence);
-//        		}	
-//    		
-//    	}	
-//    	System.out.println(moves.size());
-//    	for(int j = 0; j < moves.size(); j++){
-//    		System.out.println(moves.get(j).toString());
-//    	}
-//		return;
-//    }
-
-    
-    public ArrayList<Node> createTree(){
-    	ArrayList<Node> children = new ArrayList<>(48);
-        Node parent = new Node(children, null, 0, new Board(getBoardState()));
-        ArrayList<Pair<Integer,Integer>> pieces = getAllPieceLocations(Piece.Black);
-        Node child;
-    	ArrayList<Node> tree = new ArrayList<>();
-    	tree.add(parent);
-    	
-		return tree;
-    }
-    
-//    public void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence, ArrayList<ArrayList<Pair<Integer,Integer>>> tempMoves){
-//        ArrayList<Pair<Integer,Integer>> extraJumps = getValidJumps(x,y, player, king, true);
-//        if(extraJumps.size() == 0){
-//            if(!sequence.isEmpty())
-//                tempMoves.add(sequence);
-//            return;
-//        }
-//        for(int i = 0; i < extraJumps.size(); i++){
-//            ArrayList<Pair<Integer,Integer>> sequenceTemp = new ArrayList<>(sequence);
-//            sequenceTemp.add(new Pair<>(extraJumps.get(i).posX,extraJumps.get(i).posY));
-//            getChainMoves(extraJumps.get(i).posX, extraJumps.get(i).posY, player, king, sequenceTemp, tempMoves);
-//        }
-//        return;
-//    }
-    
-    
-    
 
     /**
      * Method checks for all valid diagonal jump. It takes into consideration if the Piece is a King or not.
