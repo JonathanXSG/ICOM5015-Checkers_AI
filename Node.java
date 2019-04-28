@@ -39,9 +39,9 @@ public class Node {
 	 * Method for finding the node that is the parent of the current node
 	 * @return Current Node's Parent Node
 	 */
-//	public Node getParentNode(){
-//		return parentNode;
-//	}
+	public Node getParentNode(){
+		return parentNode;
+	}
 
 	
 	/**
@@ -78,6 +78,14 @@ public class Node {
 	
 	public void addChild(Node child){
 		childrenNodes.add(child);
+	}
+	
+	public int childrenNum(){
+		return childrenNodes.size();
+	}
+	
+	public Node child(int index){
+		return childrenNodes.get(index);
 	}
 	
 	

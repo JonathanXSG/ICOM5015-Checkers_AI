@@ -297,19 +297,67 @@ public class Board {
 		return tree;
     }
     
-    public void createTree1(int depth, Node root, ArrayList<Node> tree, Piece player){
+    public void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence, ArrayList<ArrayList<Pair<Integer,Integer>>> tempMoves){
+        ArrayList<Pair<Integer,Integer>> extraJumps = getValidJumps(x,y, player, king, true);
+        if(extraJumps.size() == 0){
+            if(!sequence.isEmpty())
+                tempMoves.add(sequence);
+            return;
+        }
+        for(int i = 0; i < extraJumps.size(); i++){
+            ArrayList<Pair<Integer,Integer>> sequenceTemp = new ArrayList<>(sequence);
+            sequenceTemp.add(new Pair<>(extraJumps.get(i).posX,extraJumps.get(i).posY));
+            getChainMoves(extraJumps.get(i).posX, extraJumps.get(i).posY, player, king, sequenceTemp, tempMoves);
+        }
+        return;
+    }
+    
+    public void createTree1(int depth, ArrayList<Node> tree, Piece player, Board board, Node root){
     	if(depth == 4){
+    		root.setValue(board.evaluationFunction(player));
     		return;
     	}else{
+    		//Node root;
     		Node child;
-    		ArrayList<Node> children = new ArrayList<Node>();
+    		//ArrayList<Node> children = new ArrayList<Node>();
     		ArrayList<Pair<Integer,Integer>> pieces = getAllPieceLocations(player);
-    		ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> moves;
-    		for(int i = 0; i < pieces.size(); i++){
-    			moves =  getNormalMoves(pieces.get(i).posX, pieces.get(i).posY, player);
-    			for(int j = 0; j < moves.size(); j++){
-    				makeMove(player, moves.get(j).posX, moves.get(j).posY);
+    		ArrayList<Pair<Integer,Integer>> sequence = new ArrayList<>();
+    		ArrayList<ArrayList<Pair<Integer,Integer>>>  tempMoves = new ArrayList<>();
+    		Board hypotheticalBoard = new Board(getBoardState());
+//    		if(depth == 0){
+//    			root =  new Node(children, null, 0, hypotheticalBoard);
+//    		}
+    		for(int i =0; i < pieces.size(); i++){
+    			ArrayList<Pair<Integer,Integer>> moves = getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY, player);
+    			ArrayList<Pair<Integer,Integer>> captures = getValidJumps(pieces.get(i).posX, pieces.get(i).posY, player, isPieceKing(pieces.get(i).posX, pieces.get(i).posY),true);
+    			if(captures.size() > 0){
+    				getChainMoves(pieces.get(i).posX, pieces.get(i).posY,player, isPieceKing(pieces.get(i).posX, pieces.get(i).posY), sequence, tempMoves);
+    				for(int j = 0; j < sequence.size(); j++){
+    					ArrayList<Node> children1 = new ArrayList<Node>();
+    					hypotheticalBoard.makeMove(player, pieces.get(i),  sequence.get(i));
+    					child = new Node(children1, root, 0,hypotheticalBoard);
+    					root.addChild(child);;
+    				}
+    			}else{
+    				for(int h = 0; h<moves.size(); h++){
+    					ArrayList<Node> children1 = new ArrayList<Node>();
+    					hypotheticalBoard.makeMove(player, pieces.get(h),  moves.get(h));
+    					child = new Node(children1, root, 0, hypotheticalBoard);
+    					root.addChild(child);
+    				}
     			}
+    			tree.add(root);
+    			if(player == Piece.Black){
+    				player = Piece.Red;
+    			}else{
+    				player = Piece.Black;
+    			}
+    			for(int k = 0; k < root.childrenNum(); k++){
+    				createTree1(depth+1, tree, player, hypotheticalBoard, root.child(k));
+    			}
+    			
+    		}
+    		
 //    			ArrayList<Pair<Integer,Integer>> moves = getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY);
 //    			ArrayList<Pair<Integer,Integer>> captures = getValidJumps(pieces.get(i).posX, pieces.get(i).posY, player, true);
 //    			moves.addAll(captures);
@@ -319,9 +367,7 @@ public class Board {
 //    				root.addChild(child);
 //    			}
     		}
-    		createTree1(depth+1, root, tree, player);
-    	}
-    	
+    		
 		return;
     }
     
