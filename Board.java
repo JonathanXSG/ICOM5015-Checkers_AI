@@ -340,8 +340,10 @@ public class Board {
     					hypotheticalBoard.makeMove(player, pieces.get(i),  sequence.get(i));
     					if(player == Piece.Black){
     						child = new Node(children1, root, Max,hypotheticalBoard);
+    						hypotheticalBoard.makeMove(player, sequence.get(i), pieces.get(i));
     					}else{
     						child = new Node(children1, root, Min,hypotheticalBoard);
+    						hypotheticalBoard.makeMove(player, sequence.get(i), pieces.get(i));
     					}
     					
     					root.addChild(child);;
@@ -352,8 +354,10 @@ public class Board {
     					hypotheticalBoard.makeMove(player, pieces.get(h),  moves.get(h));
     					if(player == Piece.Black){
     						child = new Node(children1, root, Max,hypotheticalBoard);
+    						hypotheticalBoard.makeMove(player, moves.get(h), pieces.get(h));
     					}else{
     						child = new Node(children1, root, Min,hypotheticalBoard);
+    						hypotheticalBoard.makeMove(player, moves.get(h), pieces.get(h));
     					}
     					root.addChild(child);
     				}

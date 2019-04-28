@@ -36,7 +36,8 @@ public class Main {
         ArrayList<Node> tree = new ArrayList<Node>();
         ArrayList<Node> children = new ArrayList<Node>();
         Node root = new Node(children, null, 0, test);
-        test.createTree1(0, tree, Piece.Black, test,root);
+        Board test1 = new Board(test.getBoardState());
+        test.createTree1(0, tree, Piece.Black, test1,root);
         System.out.println(tree.size());
 //        for(int j = 0; j < tree.size(); j++){
 //        	tree.get(j).getState().printBoard();
