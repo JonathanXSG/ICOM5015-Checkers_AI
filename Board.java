@@ -83,13 +83,27 @@ public class Board {
 
 	//TODO: Implement checking if a move is valid in terms of diagonal move or jumping over piece
     public boolean makeMove(Piece player, Pair<Integer,Integer> initialCord, Pair<Integer,Integer> finalCord){
+	    boolean king = isPieceKing(initialCord.posX, initialCord.posY);
         if(isInvalidCord(initialCord) || isInvalidCord(finalCord))
             return false;
 	    else if(Character.toUpperCase(board(initialCord)) != (player == Piece.Black? 'B' : 'R'))
 	        return false;
         else if(board(finalCord) != ' ')
             return false;
+        else if(!getValidDiagonals(initialCord.posX, initialCord.posY, player).contains(finalCord) && !getValidJumps(initialCord.posX, initialCord.posY, player, king,true).contains(finalCord)) {
+            return false;
+        }
+        else if(!king && player == Piece.Black && finalCord.posY < initialCord.posY){
+            return false;
+        }
+        else if(!king && player == Piece.Red && finalCord.posY > initialCord.posY){
+            return false;
+        }
         else{
+            if(getValidJumps(initialCord.posX, initialCord.posY, player, king, true).contains(finalCord)){
+                //Jump over opponent
+                board(new Pair<>((finalCord.posX+initialCord.posX)/2,(finalCord.posY+initialCord.posY)/2), ' ');
+            }
             if(finalCord.posY == size-1 || finalCord.posY == 0)
                 board(finalCord, Character.toUpperCase(board(initialCord)));
             else
