@@ -313,8 +313,9 @@ public class Board {
     }
     
     public void createTree1(int depth, ArrayList<Node> tree, Piece player, Board board, Node root){
-    	if(depth == 4){
+    	if(depth == 3){
     		root.setValue(board.evaluationFunction(player));
+    		tree.add(root);
     		return;
     	}else{
     		//Node root;

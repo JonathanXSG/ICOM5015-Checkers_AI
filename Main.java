@@ -22,9 +22,9 @@ public class Main {
 
         test.printBoard();
 
-        System.out.println(test.makeMove(Piece.Red, new Pair<>(0,5), new Pair<>(2,3)));
-        System.out.println(test.makeMove(Piece.Red, new Pair<>(4,5), new Pair<>(4,3)));
-        System.out.println(test.makeMove(Piece.Red, new Pair<>(3,6), new Pair<>(4,5)));
+//        System.out.println(test.makeMove(Piece.Red, new Pair<>(0,5), new Pair<>(2,3)));
+//        System.out.println(test.makeMove(Piece.Red, new Pair<>(4,5), new Pair<>(4,3)));
+//        System.out.println(test.makeMove(Piece.Red, new Pair<>(3,6), new Pair<>(4,5)));
 //        System.out.println(test.makeMove(Piece.Black, new Pair<>(3,2), new Pair<>(1,4)));
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(2,5), new Pair<>(0,3)));
         test.printBoard();
@@ -36,7 +36,7 @@ public class Main {
         ArrayList<Node> tree = new ArrayList<Node>();
         ArrayList<Node> children = new ArrayList<Node>();
         Node root = new Node(children, null, 0, test);
-        test.createTree1(0, tree, Piece.Red, test,root);
+        test.createTree1(0, tree, Piece.Black, test,root);
         System.out.println(tree.size());
 //        for(int j = 0; j < tree.size(); j++){
 //        	tree.get(j).getState().printBoard();
