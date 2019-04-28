@@ -186,12 +186,12 @@ public class Board {
     public ArrayList<Pair<Integer,Integer>> getValidDiagonals(int x, int y, Piece player){
     	ArrayList<Pair<Integer,Integer>> diagonals = new ArrayList<>(4);
     	int modifier = (player == Piece.Black? 1:-1);
-    	if(Character.isLowerCase(boardState[x][y]) && boardState[x][y] != ' ' && Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R')){
+    	if(!isPieceKing(x,y) && boardState[x][y] != ' ' && (boardState[x][y] == (player == Piece.Black? 'b' : 'r'))){
     		 if(!isInvalidCord(x+modifier, y+modifier) && boardState[x+modifier][y+modifier] == ' ')
     	            diagonals.add(new Pair<>(x+modifier, y+modifier));
     		 if(!isInvalidCord(x-modifier, y+modifier) && boardState[x-modifier][y+modifier] == ' ')
     	            diagonals.add(new Pair<>(x-modifier, y+modifier));
-    	}else if(boardState[x][y] != ' ' && Character.toLowerCase(boardState[x][y]) == (player == Piece.Black? 'b' : 'r')  ){
+    	}else if(boardState[x][y] != ' ' && (boardState[x][y] == (player == Piece.Black? 'b' : 'r'))){
     		if(!isInvalidCord(x+modifier, y+modifier)  && boardState[x+modifier][y+modifier] == ' ')
                 diagonals.add(new Pair<>(x+modifier, y+modifier));
             if(!isInvalidCord(x+modifier, y-modifier)  && boardState[x+modifier][y-modifier] == ' ')
@@ -389,13 +389,13 @@ public class Board {
                     && iskOpponentInCord(x-1, y+modifier, player))
                 jumps.add(new Pair<>(x+1, y+(modifier*-1)));
             // These are if the other player's piece is King
-            if(!isInvalidCord(x+1, y+(modifier*-1)) && isPieceKing(x+1, y+(modifier*-1))
-                    && !isInvalidCord(x-1, y+modifier)
+            if(!isInvalidCord(x+1, y+(modifier*-1)) && !isInvalidCord(x-1, y+modifier)
+                    && isPieceKing(x+1, y+(modifier*-1))
                     && boardState[x+1][y+(modifier*-1)] != ' ' && boardState[x-1][y+modifier] == ' '
                     && iskOpponentInCord(x+1, y+(modifier*-1), player))
                 jumps.add(new Pair<>(x-1, y+modifier));
-            if(!isInvalidCord(x-1, y+(modifier*-1)) && isPieceKing(x-1, y+(modifier*-1))
-                    && !isInvalidCord(x+1, y+modifier)
+            if(!isInvalidCord(x-1, y+(modifier*-1)) && !isInvalidCord(x+1, y+modifier)
+                    && isPieceKing(x-1, y+(modifier*-1))
                     && boardState[x-1][y+(modifier*-1)] != ' ' && boardState[x+1][y+modifier] == ' '
                     && iskOpponentInCord(x-1, y+(modifier*-1), player))
                 jumps.add(new Pair<>(x+1, y+modifier));
@@ -445,6 +445,7 @@ public class Board {
 
     public void printBoard(){
         for(int y=0; y<size; y++){
+            System.out.print(ConsoleColors.YELLOW_BOLD + y +" ");
             for(int x=0; x<size; x++){
                 StringBuilder buffer = new StringBuilder();
                 if(boardState[x][y] == 'B' || boardState[x][y] == 'b')
@@ -461,6 +462,7 @@ public class Board {
                 System.out.print(buffer.toString());
             }
             System.out.println();
+            if(y==7) System.out.println(ConsoleColors.YELLOW_BOLD+"   0  1  2  3  4  5  6  7"+ConsoleColors.RESET);
         }
     }
 
