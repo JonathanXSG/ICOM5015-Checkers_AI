@@ -107,7 +107,7 @@ public class Board {
                     values[x][y] = 0;
                 else
                     values[x][y] = ((Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R')) ? 1:-1)
-                            * boardValues[x][y] * (Character.isUpperCase(boardState[x][y])? KING_VALUE: PIECE_VALUE) ;
+                            * boardValues[x][y] * (isPieceKing(x,y)? KING_VALUE: PIECE_VALUE) ;
                 }
 		}
 		return values;
@@ -119,7 +119,7 @@ public class Board {
             for(int y = 0; y < size; y++){
                 if(boardState[x][y] != ' ')
                     value += ((Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R')) ? 1:-1)
-                            * boardValues[x][y] * (Character.isUpperCase(boardState[x][y])? KING_VALUE: PIECE_VALUE) ;
+                            * boardValues[x][y] * (isPieceKing(x,y)? KING_VALUE: PIECE_VALUE) ;
             }
         }
         return value;
@@ -130,8 +130,10 @@ public class Board {
         int offensiveJumps = 0;
         int defensiveJumps = 0;
         for(Pair<Integer,Integer> cord : getAllPieceLocations(player)){
-            offensiveJumps += getValidJumps(cord.posX, cord.posY, player, true).size();
-            defensiveJumps += getValidJumps(cord.posX, cord.posY, player, false).size();
+            offensiveJumps += getValidJumps(cord.posX, cord.posY, player,
+                    isPieceKing(cord.posX, cord.posY),true).size();
+            defensiveJumps += getValidJumps(cord.posX, cord.posY, player,
+                    isPieceKing(cord.posX, cord.posY),false).size();
         }
         offensiveJumps *= CAPTURE_VALUE;
         defensiveJumps *= -CAPTURE_VALUE;
@@ -149,53 +151,39 @@ public class Board {
      * @return An array containing the coordinates of all the pieces
      */
     public ArrayList<Pair<Integer,Integer>> getAllPieceLocations(Piece player){
-        ArrayList<Pair<Integer,Integer>> loactions = new ArrayList<>(12);
+        ArrayList<Pair<Integer,Integer>> locations = new ArrayList<>(12);
 
         int count = size*size,  maxCol = size-1,  minCol = 0, maxRow = size-1, minRow = 0;
         while (count > 0) {
             for (int i = minCol+1; i <= maxCol; i+=2)
                 if(isPlayerInCord(minRow, i, player))
-                    loactions.add(new Pair<>(minRow, i));
+                    locations.add(new Pair<>(minRow, i));
             for (int i = minRow+2; i <= maxRow; i+=2)
                 if(isPlayerInCord(i, maxCol, player))
-                    loactions.add(new Pair<>(i, maxCol));
+                    locations.add(new Pair<>(i, maxCol));
             for (int i = maxCol-1; i >= minCol; i-=2)
                 if(isPlayerInCord(maxRow, i, player))
-                    loactions.add(new Pair<>(maxRow, i));
+                    locations.add(new Pair<>(maxRow, i));
             for (int i = maxRow-2; i >= minRow+1; i-=2)
                 if(isPlayerInCord(i, minCol, player))
-                    loactions.add(new Pair<>(i, minCol));
+                    locations.add(new Pair<>(i, minCol));
             minCol++;
             minRow++;
             maxCol--;
             maxRow--;
             count--;
         }
-        return loactions;
+        return locations;
     }
 
     /**
      * Method finds all valid diagonal positions from the given coordinate
      * @param x X coordinate of the desired position to check
      * @param y Y coordinate of the desired position to check
+     * @param player
      * @return array of 1-4 valid diagonal coordinates
      */
-    public ArrayList<Pair<Integer,Integer>> getValidDiagonals(int x, int y){
-        ArrayList<Pair<Integer,Integer>> diagonals = new ArrayList<>(4);
-        if(!isInvalidCord(x+1, y+1))
-            diagonals.add(new Pair<>(x+1, y+1));
-        if(!isInvalidCord(x+1, y-1))
-            diagonals.add(new Pair<>(x+1, y-1));
-        if(!isInvalidCord(x-1, y+1))
-            diagonals.add(new Pair<>(x-1, y+1));
-        if(!isInvalidCord(x-1, y-1))
-            diagonals.add(new Pair<>(x-1, y-1));
-
-        return diagonals;
-    }
-    
-    public ArrayList<Pair<Integer,Integer>> getValidDiagonals1(int x, int y, Piece player){
-    	//Character.toUpperCase(board(initialCord)) != (player == Piece.Black? 'B' : 'R')
+    public ArrayList<Pair<Integer,Integer>> getValidDiagonals(int x, int y, Piece player){
     	ArrayList<Pair<Integer,Integer>> diagonals = new ArrayList<>(4);
     	int modifier = (player == Piece.Black? 1:-1);
     	if(Character.isLowerCase(boardState[x][y]) && boardState[x][y] != ' ' && Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R')){
@@ -213,8 +201,6 @@ public class Board {
             if(!isInvalidCord(x-modifier, y-modifier)  && boardState[x-modifier][y-modifier] == ' ')
                 diagonals.add(new Pair<>(x-modifier, y-modifier));
     	}
-        
-        
 
         return diagonals;
     }
@@ -227,7 +213,7 @@ public class Board {
 //    	Board hypotheticalBoard = board;
 //    	ArrayList<Pair<Integer,Integer>> pieces = getAllPieceLocations(player);
 //    	for(int i = 0; i < pieces.size();i++){
-//    		ArrayList<Pair<Integer,Integer>> diagonals = getValidDiagonals1(pieces.get(i).posX, pieces.get(i).posY, player);
+//    		ArrayList<Pair<Integer,Integer>> diagonals = getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY, player);
 //    		ArrayList<Pair<Integer,Integer>> jumps = getValidJumps(pieces.get(i).posX, pieces.get(i).posY,player, true);
 //    		if(jumps.size() != 0){
 //    			diagonals.addAll(jumps);
@@ -236,8 +222,8 @@ public class Board {
 //    		moves.add(move);
 //    	}
 
-    	ArrayList<Pair<Integer,Integer>> diagonals = getValidDiagonals1(x, y, player);
-    	//ArrayList<Pair<Integer,Integer>> jumps = getValidJumps1(x, y, player, true);
+    	ArrayList<Pair<Integer,Integer>> diagonals = getValidDiagonals(x, y, player);
+    	//ArrayList<Pair<Integer,Integer>> jumps = getValidJumps(x, y, player, true);
     	System.out.println(diagonals.size());
     	//System.out.println(jumps.size());
 //    	if(jumps.size() > 0){
@@ -268,7 +254,7 @@ public class Board {
 //    		//sequence.remove(sequence.size()-1);
 //    		return;
 //    	}else{
-//    		//ArrayList<Pair<Integer,Integer>> jumps = getValidJumps1(x, y, player, true);
+//    		//ArrayList<Pair<Integer,Integer>> jumps = getValidJumps(x, y, player, true);
 //    		//ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> sequence = new ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>();
 //    		
 //    		if(sequence.size() > 1){
@@ -279,7 +265,7 @@ public class Board {
 //        		Board hypotheticalBoard = board;
 //        		Pair<Integer, Integer> initCord = new Pair<>(x,y);
 //        		hypotheticalBoard.makeMove(player, initCord, jumps.get(pieces-1));
-//        		ArrayList<Pair<Integer,Integer>> extraJumps = getValidJumps1(jumps.get(pieces-1).posX, jumps.get(pieces-1).posY, player, true);
+//        		ArrayList<Pair<Integer,Integer>> extraJumps = getValidJumps(jumps.get(pieces-1).posX, jumps.get(pieces-1).posY, player, true);
 //        		if(extraJumps.size() > 0){
 //        			move = new Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>(initCord,jumps.get(pieces-1));
 //        			sequence.add(move);
@@ -298,31 +284,7 @@ public class Board {
 //    	}
 //		return;
 //    }
-    
-    public  void getChainMoves(int x, int y, Piece player, ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> sequence, ArrayList<ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>> moves, int j){
-    	if(j == 0){
-    		moves.add(sequence);
-    		return;
-    	}else{
-    		Pair<Pair<Integer,Integer>, Pair<Integer,Integer>> move;
-    		Pair<Integer, Integer> initCord = new Pair<>(x,y);
-    		ArrayList<Pair<Integer,Integer>> extraJumps = getValidJumps1(x,y, player, true);
-    		if(extraJumps.size() == 0){
-    			getChainMoves(x, y,player,sequence,moves,0);
-    		}
-    		for(int i = 0; i < extraJumps.size(); i++){
-    			move = new Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>(initCord,extraJumps.get(i));
-    			sequence.add(move);
-    			getChainMoves(extraJumps.get(i).posX, extraJumps.get(i).posY,player,sequence,moves,j);
-    		}
-    	}
-//    	System.out.println(moves.size());
-//    	for(int k = 0; k < moves.size(); k++){
-//    		System.out.println(moves.get(k).toString());
-//    	}
-		return;
-    }
-    
+
     
     public ArrayList<Node> createTree(){
     	ArrayList<Node> children = new ArrayList<>(48);
@@ -372,142 +334,32 @@ public class Board {
      * @param y Y coordinate of the desired position to check
      * @param player Variable specifying the current Player
      * @param offensive Boolean specifying if offensive or defensive jumps are to be considered.
-     * @return If looking for offensive jumps, it will return an array of opponents that can be jumped.
-     *          If looking for defensive humps, it will return an array of opponents that can jump over it.
+     * @return If looking for offensive jumps, it will return an array of cords after jump.
+     *          If looking for defensive humps, it will return an array of cords after opponents jump.
      */
-    public ArrayList<Pair<Integer,Integer>> getValidJumps(int x, int y, Piece player, boolean offensive){
+    public ArrayList<Pair<Integer,Integer>> getValidJumps(int x, int y, Piece player, boolean king, boolean offensive){
         ArrayList<Pair<Integer,Integer>> jumps = new ArrayList<>(4);
 
-        if(Character.isLowerCase(boardState[x][y])){
          /*
             The modifier is used to change de coordinates that will be checked.
             If the player is a Black Piece then the coordinates are increasing.
          */
-            int modifier = (player == Piece.Black? 1:-1);
-            if(offensive){
+        int modifier = (player == Piece.Black? 1:-1);
+        if(offensive){
+            if(!king){
                 if(!isInvalidCord(x+1, y+modifier) && !isInvalidCord(x+2, y+(modifier*2))
                         && boardState[x+1][y+modifier] != ' ' && boardState[x+2][y+(modifier*2)] == ' '
                         && iskOpponentInCord(x+1, y+modifier, player))
-                    jumps.add(new Pair<>(x+1, y+modifier));
-                if(!isInvalidCord(x-1, y+modifier) && !isInvalidCord(x-2, y+(modifier*2))
-                        && boardState[x-1][y+modifier] != ' ' && boardState[x-2][y+(modifier*2)] == ' '
-                        && iskOpponentInCord(x-1, y+modifier, player))
-                    jumps.add(new Pair<>(x-1, y+modifier));
-            }
-            else{
-                if(!isInvalidCord(x+1, y+modifier) && !isInvalidCord(x-1, y+(modifier*-1))
-                        && boardState[x+1][y+modifier] != ' ' && boardState[x-1][y+(modifier*-1)] == ' '
-                        && iskOpponentInCord(x+1, y+modifier, player))
-                    jumps.add(new Pair<>(x+1, y+modifier));
-                if(!isInvalidCord(x-1, y+modifier) && !isInvalidCord(x+1, y+(modifier*-1))
-                        && boardState[x-1][y+modifier] != ' ' && boardState[x+1][y+(modifier*-1)] == ' '
-                        && iskOpponentInCord(x-1, y+modifier, player))
-                    jumps.add(new Pair<>(x-1, y+modifier));
-                // These are if the other player's piece is King
-                if(!isInvalidCord(x+1, y+(modifier*-1)) && isPieceKing(x+1, y+(modifier*-1))
-                        && !isInvalidCord(x-1, y+modifier)
-                        && boardState[x+1][y+(modifier*-1)] != ' ' && boardState[x-1][y+modifier] == ' '
-                        && iskOpponentInCord(x+1, y+(modifier*-1), player))
-                    jumps.add(new Pair<>(x+1, y+(modifier*-1)));
-                if(!isInvalidCord(x-1, y+(modifier*-1)) && isPieceKing(x-1, y+(modifier*-1))
-                        && !isInvalidCord(x+1, y+(modifier*-1))
-                        && boardState[x-1][y+(modifier*-1)] != ' ' && boardState[x+1][y+modifier] == ' '
-                        && iskOpponentInCord(x-1, y+(modifier*-1), player))
-                    jumps.add(new Pair<>(x-1, y+(modifier*-1)));
-            }
-        }
-        else{
-            /*
-            If the Piece is King then it can move in either direction.
-             */
-            if(offensive){
-                if(!isInvalidCord(x+1, y+1) && !isInvalidCord(x+2, y+2)
-                        && boardState[x+1][y+1] != ' ' && boardState[x+2][y+2] == ' '
-                        && iskOpponentInCord(x+1, y+1, player))
-                    jumps.add(new Pair<>(x+1, y+1));
-                if(!isInvalidCord(x+1, y-1) && !isInvalidCord(x+2, y-2)
-                        && boardState[x+1][y-1] != ' ' && boardState[x+2][y-2] == ' '
-                        && iskOpponentInCord(x+1, y-1, player))
-                    jumps.add(new Pair<>(x+1, y-1));
-                if(!isInvalidCord(x-1, y+1) && !isInvalidCord(x-2, y+2)
-                        && boardState[x-1][y+1] != ' ' && boardState[x-2][y+2] == ' '
-                        && iskOpponentInCord(x-1, y+1, player))
-                    jumps.add(new Pair<>(x-1, y+1));
-                if(!isInvalidCord(x-1, y-1) && !isInvalidCord(x-2, y-2)
-                        && boardState[x-1][y-1] != ' ' && boardState[x-2][y-2] == ' '
-                        && iskOpponentInCord(x-1, y-1, player))
-                    jumps.add(new Pair<>(x-1, y-1));
-            }
-            else{
-                if(!isInvalidCord(x+1, y+1) && !isInvalidCord(x-1, y-1)
-                        && boardState[x+1][y+1] != ' ' && boardState[x-1][y-1] == ' '
-                        && iskOpponentInCord(x+1, y+1, player))
-                    jumps.add(new Pair<>(x+1, y+1));
-                if(!isInvalidCord(x-1, y-1) && !isInvalidCord(x+1, y+1)
-                        && boardState[x-1][y-1] != ' ' && boardState[x+1][y+1] == ' '
-                        && iskOpponentInCord(x-1, y-1, player))
-                    jumps.add(new Pair<>(x-1, y-1));
-                // These are if the other player's piece is King
-                if(!isInvalidCord(x-1, y+1) && isPieceKing(x-1, y+1) && !isInvalidCord(x+1, y-1)
-                        && boardState[x-1][y+1] != ' ' && boardState[x+1][y-1] == ' '
-                        && iskOpponentInCord(x-1, y+1, player))
-                    jumps.add(new Pair<>(x-1, y+1));
-                if(!isInvalidCord(x+1, y-1) && isPieceKing(x+1, y-1) && !isInvalidCord(x-1, y+1)
-                        && boardState[x+1][y-1] != ' ' && boardState[x-1][y+1] == ' '
-                        && iskOpponentInCord(x+1, y-1, player))
-                    jumps.add(new Pair<>(x+1, y-1));
-            }
-        }
-
-        return jumps;
-    }
-    
-    public ArrayList<Pair<Integer,Integer>> getValidJumps1(int x, int y, Piece player, boolean offensive){
-        ArrayList<Pair<Integer,Integer>> jumps = new ArrayList<>(4);
-
-        if(Character.isLowerCase(boardState[x][y])){
-         /*
-            The modifier is used to change de coordinates that will be checked.
-            If the player is a Black Piece then the coordinates are increasing.
-         */
-            int modifier = (player == Piece.Black? 1:-1);
-            if(offensive){
-                if(!isInvalidCord(x+1, y+modifier) && !isInvalidCord(x+2, y+(modifier*2))
-                        && boardState[x+1][y+modifier] != ' ' && boardState[x+2][y+(modifier*2)] == ' '
-                        && iskOpponentInCord(x+1, y+modifier, player))
-                    jumps.add(new Pair<>(x+2, y+(modifier*2)));
+                jumps.add(new Pair<>(x+2, y+(modifier*2)));
                 if(!isInvalidCord(x-1, y+modifier) && !isInvalidCord(x-2, y+(modifier*2))
                         && boardState[x-1][y+modifier] != ' ' && boardState[x-2][y+(modifier*2)] == ' '
                         && iskOpponentInCord(x-1, y+modifier, player))
                     jumps.add(new Pair<>(x-2, y+(modifier*2)));
             }
             else{
-                if(!isInvalidCord(x+1, y+modifier) && !isInvalidCord(x-1, y+(modifier*-1))
-                        && boardState[x+1][y+modifier] != ' ' && boardState[x-1][y+(modifier*-1)] == ' '
-                        && iskOpponentInCord(x+1, y+modifier, player))
-                    jumps.add(new Pair<>(x+1, y+modifier));
-                if(!isInvalidCord(x-1, y+modifier) && !isInvalidCord(x+1, y+(modifier*-1))
-                        && boardState[x-1][y+modifier] != ' ' && boardState[x+1][y+(modifier*-1)] == ' '
-                        && iskOpponentInCord(x-1, y+modifier, player))
-                    jumps.add(new Pair<>(x-1, y+modifier));
-                // These are if the other player's piece is King
-                if(!isInvalidCord(x+1, y+(modifier*-1)) && isPieceKing(x+1, y+(modifier*-1))
-                        && !isInvalidCord(x-1, y+modifier)
-                        && boardState[x+1][y+(modifier*-1)] != ' ' && boardState[x-1][y+modifier] == ' '
-                        && iskOpponentInCord(x+1, y+(modifier*-1), player))
-                    jumps.add(new Pair<>(x+1, y+(modifier*-1)));
-                if(!isInvalidCord(x-1, y+(modifier*-1)) && isPieceKing(x-1, y+(modifier*-1))
-                        && !isInvalidCord(x+1, y+(modifier*-1))
-                        && boardState[x-1][y+(modifier*-1)] != ' ' && boardState[x+1][y+modifier] == ' '
-                        && iskOpponentInCord(x-1, y+(modifier*-1), player))
-                    jumps.add(new Pair<>(x-1, y+(modifier*-1)));
-            }
-        }
-        else{
             /*
             If the Piece is King then it can move in either direction.
              */
-            if(offensive){
                 if(!isInvalidCord(x+1, y+1) && !isInvalidCord(x+2, y+2)
                         && boardState[x+1][y+1] != ' ' && boardState[x+2][y+2] == ' '
                         && iskOpponentInCord(x+1, y+1, player))
@@ -525,25 +377,28 @@ public class Board {
                         && iskOpponentInCord(x-1, y-1, player))
                     jumps.add(new Pair<>(x-2, y-2));
             }
-            else{
-                if(!isInvalidCord(x+1, y+1) && !isInvalidCord(x-1, y-1)
-                        && boardState[x+1][y+1] != ' ' && boardState[x-1][y-1] == ' '
-                        && iskOpponentInCord(x+1, y+1, player))
-                    jumps.add(new Pair<>(x+1, y+1));
-                if(!isInvalidCord(x-1, y-1) && !isInvalidCord(x+1, y+1)
-                        && boardState[x-1][y-1] != ' ' && boardState[x+1][y+1] == ' '
-                        && iskOpponentInCord(x-1, y-1, player))
-                    jumps.add(new Pair<>(x-1, y-1));
-                // These are if the other player's piece is King
-                if(!isInvalidCord(x-1, y+1) && isPieceKing(x-1, y+1) && !isInvalidCord(x+1, y-1)
-                        && boardState[x-1][y+1] != ' ' && boardState[x+1][y-1] == ' '
-                        && iskOpponentInCord(x-1, y+1, player))
-                    jumps.add(new Pair<>(x-1, y+1));
-                if(!isInvalidCord(x+1, y-1) && isPieceKing(x+1, y-1) && !isInvalidCord(x-1, y+1)
-                        && boardState[x+1][y-1] != ' ' && boardState[x-1][y+1] == ' '
-                        && iskOpponentInCord(x+1, y-1, player))
-                    jumps.add(new Pair<>(x+1, y-1));
-            }
+
+        }
+        else{
+            if(!isInvalidCord(x+1, y+modifier) && !isInvalidCord(x-1, y+(modifier*-1))
+                    && boardState[x+1][y+modifier] != ' ' && boardState[x-1][y+(modifier*-1)] == ' '
+                    && iskOpponentInCord(x+1, y+modifier, player))
+                jumps.add(new Pair<>(x-1, y+(modifier*-1)));
+            if(!isInvalidCord(x-1, y+modifier) && !isInvalidCord(x+1, y+(modifier*-1))
+                    && boardState[x-1][y+modifier] != ' ' && boardState[x+1][y+(modifier*-1)] == ' '
+                    && iskOpponentInCord(x-1, y+modifier, player))
+                jumps.add(new Pair<>(x+1, y+(modifier*-1)));
+            // These are if the other player's piece is King
+            if(!isInvalidCord(x+1, y+(modifier*-1)) && isPieceKing(x+1, y+(modifier*-1))
+                    && !isInvalidCord(x-1, y+modifier)
+                    && boardState[x+1][y+(modifier*-1)] != ' ' && boardState[x-1][y+modifier] == ' '
+                    && iskOpponentInCord(x+1, y+(modifier*-1), player))
+                jumps.add(new Pair<>(x-1, y+modifier));
+            if(!isInvalidCord(x-1, y+(modifier*-1)) && isPieceKing(x-1, y+(modifier*-1))
+                    && !isInvalidCord(x+1, y+modifier)
+                    && boardState[x-1][y+(modifier*-1)] != ' ' && boardState[x+1][y+modifier] == ' '
+                    && iskOpponentInCord(x-1, y+(modifier*-1), player))
+                jumps.add(new Pair<>(x+1, y+modifier));
         }
 
         return jumps;
@@ -564,7 +419,7 @@ public class Board {
         return (Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R'));
     }
 
-    private boolean isPieceKing(int x, int y){
+    public boolean isPieceKing(int x, int y){
         return Character.isUpperCase(boardState[x][y]);
     }
 
