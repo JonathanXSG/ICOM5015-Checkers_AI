@@ -183,7 +183,7 @@ public class Main {
 //    				}
 //    			}
 //    		}
-    		tree.add(root);
+    		//tree.add(root);
 			if(player == Piece.Black){
 				player = Piece.Red;
 			}else{
