@@ -23,7 +23,13 @@ public class Board {
 	}
 
     public Board(char[][] initialState) {
-        boardState = initialState;
+    	boardState = new char[initialState.length][initialState.length];
+    	for(int y=0; y<initialState.length; y++){
+            for(int x=0; x<initialState.length; x++){
+                boardState[x][y] = initialState[x][y];
+            }
+        }
+        //boardState = initialState;
         boardValues = new int[initialState.length][initialState.length];
         this.size = initialState.length;
         setBoardValues();
@@ -297,93 +303,21 @@ public class Board {
 		return tree;
     }
     
-    public void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence, ArrayList<ArrayList<Pair<Integer,Integer>>> tempMoves){
-        ArrayList<Pair<Integer,Integer>> extraJumps = getValidJumps(x,y, player, king, true);
-        if(extraJumps.size() == 0){
-            if(!sequence.isEmpty())
-                tempMoves.add(sequence);
-            return;
-        }
-        for(int i = 0; i < extraJumps.size(); i++){
-            ArrayList<Pair<Integer,Integer>> sequenceTemp = new ArrayList<>(sequence);
-            sequenceTemp.add(new Pair<>(extraJumps.get(i).posX,extraJumps.get(i).posY));
-            getChainMoves(extraJumps.get(i).posX, extraJumps.get(i).posY, player, king, sequenceTemp, tempMoves);
-        }
-        return;
-    }
+//    public void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence, ArrayList<ArrayList<Pair<Integer,Integer>>> tempMoves){
+//        ArrayList<Pair<Integer,Integer>> extraJumps = getValidJumps(x,y, player, king, true);
+//        if(extraJumps.size() == 0){
+//            if(!sequence.isEmpty())
+//                tempMoves.add(sequence);
+//            return;
+//        }
+//        for(int i = 0; i < extraJumps.size(); i++){
+//            ArrayList<Pair<Integer,Integer>> sequenceTemp = new ArrayList<>(sequence);
+//            sequenceTemp.add(new Pair<>(extraJumps.get(i).posX,extraJumps.get(i).posY));
+//            getChainMoves(extraJumps.get(i).posX, extraJumps.get(i).posY, player, king, sequenceTemp, tempMoves);
+//        }
+//        return;
+//    }
     
-    public void createTree1(int depth, ArrayList<Node> tree, Piece player, Board board, Node root){
-    	int Min = -1000;
-    	int Max = 1000;
-    	if(depth == 3){
-    		root.setValue(board.evaluationFunction(player));
-    		tree.add(root);
-    		return;
-    	}else{
-    		//Node root;
-    		Node child = null;
-    		//ArrayList<Node> children = new ArrayList<Node>();
-    		ArrayList<Pair<Integer,Integer>> pieces = getAllPieceLocations(player);
-    		ArrayList<Pair<Integer,Integer>> sequence = new ArrayList<>();
-    		ArrayList<ArrayList<Pair<Integer,Integer>>>  tempMoves = new ArrayList<>();
-    		Board hypotheticalBoard = new Board(getBoardState());
-//    		if(depth == 0){
-//    			root =  new Node(children, null, 0, hypotheticalBoard);
-//    		}
-    		for(int i =0; i < pieces.size(); i++){
-    			ArrayList<Pair<Integer,Integer>> moves = getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY, player);
-    			ArrayList<Pair<Integer,Integer>> captures = getValidJumps(pieces.get(i).posX, pieces.get(i).posY, player, isPieceKing(pieces.get(i).posX, pieces.get(i).posY),true);
-    			if(captures.size() > 0){
-    				getChainMoves(pieces.get(i).posX, pieces.get(i).posY,player, isPieceKing(pieces.get(i).posX, pieces.get(i).posY), sequence, tempMoves);
-    				for(int j = 0; j < sequence.size(); j++){
-    					ArrayList<Node> children1 = new ArrayList<Node>();
-    					hypotheticalBoard.makeMove(player, pieces.get(i),  sequence.get(i));
-    					if(player == Piece.Black){
-    						child = new Node(children1, root, Max,hypotheticalBoard);
-    						hypotheticalBoard.makeMove(player, sequence.get(i), pieces.get(i));
-    					}else{
-    						child = new Node(children1, root, Min,hypotheticalBoard);
-    						hypotheticalBoard.makeMove(player, sequence.get(i), pieces.get(i));
-    					}
-    					
-    					root.addChild(child);;
-    				}
-    			}else{
-    				for(int h = 0; h<moves.size(); h++){
-    					ArrayList<Node> children1 = new ArrayList<Node>();
-    					hypotheticalBoard.makeMove(player, pieces.get(h),  moves.get(h));
-    					if(player == Piece.Black){
-    						child = new Node(children1, root, Max,hypotheticalBoard);
-    						hypotheticalBoard.makeMove(player, moves.get(h), pieces.get(h));
-    					}else{
-    						child = new Node(children1, root, Min,hypotheticalBoard);
-    						hypotheticalBoard.makeMove(player, moves.get(h), pieces.get(h));
-    					}
-    					root.addChild(child);
-    				}
-    			}
-    		}
-    		tree.add(root);
-			if(player == Piece.Black){
-				player = Piece.Red;
-			}else{
-				player = Piece.Black;
-			}
-			for(int k = 0; k < root.childrenNum(); k++){
-				createTree1(depth+1, tree, player, hypotheticalBoard, root.child(k));
-			}
-//    			ArrayList<Pair<Integer,Integer>> moves = getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY);
-//    			ArrayList<Pair<Integer,Integer>> captures = getValidJumps(pieces.get(i).posX, pieces.get(i).posY, player, true);
-//    			moves.addAll(captures);
-//    			for(int j = 0; j < pieces.size(); j++){
-//    				makeMove(player, pieces.get(i), moves.get(j));
-//    				child = new Node(children, root, 0, new Board(getBoardState()));
-//    				root.addChild(child);
-//    			}
-    		}
-    		
-		return;
-    }
     
     
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Node {
 	
-	private Board state;
+//	private Board state;
 	private Board board;
 	private int value;
 	private Node parentNode;
