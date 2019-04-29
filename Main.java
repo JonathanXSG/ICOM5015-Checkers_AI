@@ -37,7 +37,7 @@ public class Main {
         root.print("",false);
         System.out.println("Time: "+ (time2-time1));
         leaves.get(leaves.size()-1).getState().printBoard();
-        Node bestMove = abPruning(root, 1000, 1000, true);
+        Node bestMove = abPruning(root, -1000, 1000, true);
         System.out.println(bestMove.getAction());
 
 //        for(int j = 0; j < tree.size(); j++){
