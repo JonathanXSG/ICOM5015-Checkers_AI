@@ -27,6 +27,12 @@ public class Main {
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(3,6), new Pair<>(4,5)));
 //        System.out.println(test.makeMove(Piece.Black, new Pair<>(3,2), new Pair<>(1,4)));
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(2,5), new Pair<>(0,3)));
+//        System.out.println(test.makeMove(Piece.Red, new Pair<>(6,5), new Pair<>(7,4)));
+//        System.out.println(test.makeMove(Piece.Black, new Pair<>(5,2), new Pair<>(6,3)));
+//        System.out.println(test.makeMove(Piece.Red, new Pair<>(7,4), new Pair<>(6,2)));
+//        System.out.println(test.makeMove(Piece.Black, new Pair<>(6,1), new Pair<>(4,3)));
+//        System.out.println(test.makeMove(Piece.Black, new Pair<>(4,3), new Pair<>(5,2)));
+
         test.printBoard();
         // Calculation initial piece values
         printArray(test.calcValues(Piece.Black));
