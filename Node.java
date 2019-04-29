@@ -9,11 +9,11 @@ import java.util.ArrayList;
 
 public class Node {
 	
-	private Board state;
+//	private Board state;
 	private Board board;
 	private int value;
 	private Node parentNode;
-//	private String actionTaken;
+	private String actionTaken;
 	private ArrayList<Node> childrenNodes;
 //	private Pair<Integer,Integer> coordinatesMove;
 	
@@ -21,14 +21,13 @@ public class Node {
 	 * Constructor for creating a Node object 
 	 * @param currentBoard State of the board at the current time
 	 * @param parent Parent of the current Node (null if it is the first node)
-	 * @param coordinates Coordinates of the movement done in the Board
 	 */
-	public Node(ArrayList<Node> children,  Node parent, int nodeValue, Board currentBoard) {
+	public Node(Node parent, int nodeValue, Board currentBoard, String action) {
 		board = currentBoard;
 		value = nodeValue;
 		parentNode = parent;
-//		actionTaken = action;
-		childrenNodes = children ;
+		actionTaken = action;
+		childrenNodes = new ArrayList<>();
 //		coordinatesMove = coordinates;
 	}
 
@@ -87,25 +86,12 @@ public class Node {
 	public Node child(int index){
 		return childrenNodes.get(index);
 	}
-	
-	
-	/**
-	 * Method for getting the final coordinates of movement done in the state
-	 * @return pair of coordinates (x,y) of the movement done
-	 */
-//	public Pair<Integer, Integer> getCoordinates(){
-//		return coordinatesMove;
-//	}
-	
-	/**
-	 * Method for setting coordinates of move taken in the node
-	 * @param coordinates pair of coordinates to be set to the node
-	 */
-//	public void setCoordinates(Pair<Integer, Integer> coordinates){
-//		coordinatesMove = coordinates;
-//	}
 
-//    @Override
+	public ArrayList<Node> getChildren() {
+		return childrenNodes;
+	}
+
+	//    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;
 //        if (o == null || getClass() != o.getClass()) return false;
@@ -118,4 +104,15 @@ public class Node {
 //
 //        return Objects.hash(state);
 //    }
+
+	public void print(String prefix, boolean isTail) {
+		System.out.println(prefix + (isTail ? "└── " : "├── ") + actionTaken);
+		for (int i = 0; i < childrenNodes.size() - 1; i++) {
+			childrenNodes.get(i).print(prefix + (isTail ? "    " : "│   "), false);
+		}
+		if (childrenNodes.size() > 0) {
+			childrenNodes.get(childrenNodes.size() - 1)
+					.print(prefix + (isTail ?"    " : "│   "), true);
+		}
+	}
 }

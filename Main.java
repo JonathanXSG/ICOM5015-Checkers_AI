@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class Main {
     private static Board test = new Board(8);
     private static ArrayList<ArrayList<Pair<Integer,Integer>>> tempMoves = new ArrayList<>();
+    private static ArrayList<Node> leaves = new ArrayList<Node>();
 
 
     public static void main(String[] args) {
@@ -19,7 +20,7 @@ public class Main {
 //		myFrame.add(board);
 //		myFrame.setVisible(true);
 
-
+        long time1 = System.nanoTime();
         test.printBoard();
 
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(0,5), new Pair<>(2,3)));
@@ -27,42 +28,34 @@ public class Main {
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(3,6), new Pair<>(4,5)));
 //        System.out.println(test.makeMove(Piece.Black, new Pair<>(3,2), new Pair<>(1,4)));
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(2,5), new Pair<>(0,3)));
-//        System.out.println(test.makeMove(Piece.Red, new Pair<>(6,5), new Pair<>(7,4)));
-//        System.out.println(test.makeMove(Piece.Black, new Pair<>(5,2), new Pair<>(6,3)));
-//        System.out.println(test.makeMove(Piece.Red, new Pair<>(7,4), new Pair<>(6,2)));
-//        System.out.println(test.makeMove(Piece.Black, new Pair<>(6,1), new Pair<>(4,3)));
-//        System.out.println(test.makeMove(Piece.Black, new Pair<>(4,3), new Pair<>(5,2)));
+//        test.printBoard();
 
-        test.printBoard();
-        // Calculation initial piece values
-        printArray(test.calcValues(Piece.Black));
-        //test.getNormalMoves(3, 2, Piece.Black);
-        ArrayList<Pair<Integer,Integer>> sequence = new ArrayList<>();
-//        getChainMoves(3, 2, Piece.Black, test.isPieceKing(3,2), sequence,1);
-        ArrayList<Node> tree = new ArrayList<Node>();
-        ArrayList<Node> children = new ArrayList<Node>();
-        Node root = new Node(children, null, 0, test);
-        Board test1 = new Board(test.getBoardState());
-        test.createTree1(0, tree, Piece.Black, test1,root);
-        System.out.println(tree.size());
+        Node root = new Node(null, 0, test, "Root");
+        createTree1(0, Piece.Black, root);
+        System.out.println(leaves.size());
+        long time2 = System.nanoTime();
+        root.print("",false);
+        System.out.println("Time: "+ (time2-time1));
+        leaves.get(leaves.size()-1).getState().printBoard();
+
 //        for(int j = 0; j < tree.size(); j++){
 //        	tree.get(j).getState().printBoard();
 //        }
-        ArrayList<Pair<Integer,Integer>> pieces =  test.getAllPieceLocations(Piece.Black);
-        System.out.println("All moves from Black player");
-        for(int i = 0; i < pieces.size(); i++){
-
-            test.getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY, Piece.Black).forEach((p) ->
-                    tempMoves.add(new ArrayList<Pair<Integer, Integer>>(){{{add(p);}}}));
-
-            getChainMoves(pieces.get(i).posX, pieces.get(i).posY, Piece.Black,
-                    test.isPieceKing(pieces.get(i).posX, pieces.get(i).posY), sequence);
-        }
-        System.out.println(tempMoves.size());
-
-        for(int i = 0; i < tempMoves.size(); i++){
-        	System.out.println(tempMoves.get(i).toString());
-        }
+//        ArrayList<Pair<Integer,Integer>> pieces =  test.getAllPieceLocations(Piece.Black);
+//        System.out.println("All moves from Black player");
+//        for(int i = 0; i < pieces.size(); i++){
+//
+//            test.getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY, Piece.Black).forEach((p) ->
+//                    tempMoves.add(new ArrayList<Pair<Integer, Integer>>(){{{add(p);}}}));
+//
+//            getChainMoves(pieces.get(i).posX, pieces.get(i).posY, Piece.Black,
+//                    test.isPieceKing(pieces.get(i).posX, pieces.get(i).posY), sequence);
+//        }
+//        System.out.println(tempMoves.size());
+//
+//        for(int i = 0; i < tempMoves.size(); i++){
+//        	System.out.println(tempMoves.get(i).toString());
+//        }
         //test.getChainMoves(3, 2, Piece.Black, test, test.getValidJumps(3, 2, Piece.Black, true), test.getValidJumps(3, 2, Piece.Black, true).size(), moves, sequence);
     }
 
@@ -89,4 +82,77 @@ public class Main {
             System.out.println();
         }
     }
+    
+    public static void createTree1(int depth, Piece player, Node root){
+    	int Min = -1000;
+    	int Max = 1000;
+    	if(depth == 3){
+    		root.setValue(root.getState().evaluationFunction(player));
+    		leaves.add(root);
+    		return;
+    	}else{
+    		Node child;
+    		//Getting all pieces a player controls
+    		ArrayList<Pair<Integer,Integer>> pieces = root.getState().getAllPieceLocations(player);
+    		boolean onlyKills = false;
+
+    		//Check if the player has a move that can jump, if so these are the only moves allowed
+            for (Pair<Integer, Integer> piece : pieces) {
+                ArrayList<Pair<Integer, Integer>> verifyCaptures = root.getState()
+                        .getValidJumps(piece.posX, piece.posY, player,
+                                root.getState().isPieceKing(piece.posX, piece.posY), true);
+                if (verifyCaptures.size() > 0) {
+                    onlyKills = true;
+                    break;
+                }
+            }
+
+    		//Only allowed jumps
+    		if(onlyKills){
+                for (Pair<Integer, Integer> piece : pieces) {
+                    //Get all the possible jump sequences that it the piece can do
+                    getChainMoves(piece.posX, piece.posY, player,
+                            root.getState().isPieceKing(piece.posX, piece.posY), new ArrayList<>());
+
+                    //making all the combination of jumps and saving them
+                    for (ArrayList<Pair<Integer, Integer>> tempMove : tempMoves) {
+                        Board hypotheticalBoard1 = new Board(root.getState());
+                        for (Pair<Integer, Integer> aTempMove : tempMove) {
+                            hypotheticalBoard1.makeMove(player, piece, aTempMove);
+                        }
+                        String action = piece.toString() + " => " + tempMove.get(tempMove.size() - 1).toString();
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1, action);
+
+                        root.addChild(child);
+                    }
+                }
+            //No jumps available so normal moves
+    		}else{
+                for (Pair<Integer, Integer> piece : pieces) {
+                    //Get all possible normal moves not being blocked by another piece
+                    ArrayList<Pair<Integer, Integer>> moves = root.getState()
+                            .getValidDiagonals(piece.posX, piece.posY, player);
+
+                    //Do all of those moves and save them to the tree
+                    for (Pair<Integer, Integer> move : moves) {
+                        Board hypotheticalBoard2 = new Board(root.getState());
+                        hypotheticalBoard2.makeMove(player, piece, move);
+                        String action = piece.toString() + " => " + move.toString();
+
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action);
+
+                        root.addChild(child);
+                    }
+                }
+    		}
+
+            //Once we are done doing all the possible moves for each piece from this player, we change players
+            //and do each possible move by the opponent on those moves by the player
+            player = (player == Piece.Black)? Piece.Red : Piece.Black;
+    		for(Node childNode : root.getChildren()){
+    		    createTree1(depth+1, player, childNode);
+    		}
+    	}
+    }
+    
 }
