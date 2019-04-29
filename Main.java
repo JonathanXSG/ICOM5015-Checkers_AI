@@ -21,7 +21,7 @@ public class Main {
 //		myFrame.setVisible(true);
 
         long time1 = System.nanoTime();
-        test.printBoard();
+        //test.printBoard();
 
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(0,5), new Pair<>(2,3)));
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(4,5), new Pair<>(4,3)));
@@ -30,7 +30,7 @@ public class Main {
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(2,5), new Pair<>(0,3)));
 //        test.printBoard();
 
-        Node root = new Node(null, -1000, test, "Root");
+        Node root = new Node(null, -1000, test, "Root",0,0);
         createTree1(0, Piece.Black, root);
         System.out.println(leaves.size());
         long time2 = System.nanoTime();
@@ -123,7 +123,7 @@ public class Main {
                             hypotheticalBoard1.makeMove(player, piece, aTempMove);
                         }
                         String action = piece.toString() + " => " + tempMove.get(tempMove.size() - 1).toString();
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1, action);
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1, action,0,0);
 
                         root.addChild(child);
                     }
@@ -141,7 +141,7 @@ public class Main {
                         hypotheticalBoard2.makeMove(player, piece, move);
                         String action = piece.toString() + " => " + move.toString();
 
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action);
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action,0,0);
 
                         root.addChild(child);
                     }
@@ -171,6 +171,8 @@ public class Main {
     					bestNode = valNode;
     				}
     				alpha = Math.max(alpha, bestNode.getValue());
+    				root.setBeta(beta);
+    				root.setAlpha(alpha);
     				if(beta <= alpha){
     					break;
     				}
@@ -184,6 +186,8 @@ public class Main {
     					bestNode = valNode;
     				}
     				beta = Math.min(beta, bestNode.getValue());
+    				root.setBeta(beta);
+    				root.setAlpha(alpha);
     				if(beta <= alpha){
     					break;
     				}
