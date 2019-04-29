@@ -41,6 +41,10 @@ public class Node {
 	public Node getParentNode(){
 		return parentNode;
 	}
+	
+	public String getAction(){
+		return actionTaken;
+	}
 
 	
 	/**

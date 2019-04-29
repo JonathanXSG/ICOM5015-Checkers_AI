@@ -30,13 +30,15 @@ public class Main {
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(2,5), new Pair<>(0,3)));
 //        test.printBoard();
 
-        Node root = new Node(null, 0, test, "Root");
+        Node root = new Node(null, -1000, test, "Root");
         createTree1(0, Piece.Black, root);
         System.out.println(leaves.size());
         long time2 = System.nanoTime();
         root.print("",false);
         System.out.println("Time: "+ (time2-time1));
         leaves.get(leaves.size()-1).getState().printBoard();
+        Node bestMove = abPruning(root, 1000, 1000, true);
+        System.out.println(bestMove.getAction());
 
 //        for(int j = 0; j < tree.size(); j++){
 //        	tree.get(j).getState().printBoard();
@@ -139,7 +141,7 @@ public class Main {
                         hypotheticalBoard2.makeMove(player, piece, move);
                         String action = piece.toString() + " => " + move.toString();
 
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action);
+                        child = new Node(root, (player == Piece.Black) ? Min : Max, hypotheticalBoard2, action);
 
                         root.addChild(child);
                     }
@@ -151,6 +153,42 @@ public class Main {
             player = (player == Piece.Black)? Piece.Red : Piece.Black;
     		for(Node childNode : root.getChildren()){
     		    createTree1(depth+1, player, childNode);
+    		}
+    	}
+    }
+    
+    public static Node abPruning(Node root, int alpha, int beta, boolean maxPlayer){
+    	Node bestNode = root;
+    	if(leaves.contains(root)){
+    		return root;
+    	}else{
+    		if(maxPlayer){
+    			//Node bestNode = root;
+    			for(int i = root.childrenNum()-1; i >= 0; i--){
+    				Node valNode = abPruning(root.child(i), alpha, beta, false); 
+    				int bestValue = Math.max(bestNode.getValue(), valNode.getValue());
+    				if(bestValue == valNode.getValue()){
+    					bestNode = valNode;
+    				}
+    				alpha = Math.max(alpha, bestNode.getValue());
+    				if(beta <= alpha){
+    					break;
+    				}
+        		}
+    			return bestNode;
+    		}else{
+    			for(int i = root.childrenNum()-1; i >= 0; i--){
+    				Node valNode = abPruning(root.child(i), alpha, beta, true); 
+    				int bestValue = Math.min(bestNode.getValue(), valNode.getValue());
+    				if(bestValue == valNode.getValue()){
+    					bestNode = valNode;
+    				}
+    				beta = Math.min(beta, bestNode.getValue());
+    				if(beta <= alpha){
+    					break;
+    				}
+	        	}
+    			return bestNode;
     		}
     	}
     }
