@@ -141,7 +141,7 @@ public class Main {
                         hypotheticalBoard2.makeMove(player, piece, move);
                         String action = piece.toString() + " => " + move.toString();
 
-                        child = new Node(root, (player == Piece.Black) ? Min : Max, hypotheticalBoard2, action);
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action);
 
                         root.addChild(child);
                     }
