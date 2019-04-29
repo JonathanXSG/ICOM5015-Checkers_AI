@@ -37,6 +37,7 @@ public class Main {
         root.print("",false);
         System.out.println("Time: "+ (time2-time1));
         leaves.get(leaves.size()-1).getState().printBoard();
+
 //        for(int j = 0; j < tree.size(); j++){
 //        	tree.get(j).getState().printBoard();
 //        }
