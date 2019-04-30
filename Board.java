@@ -407,4 +407,24 @@ public class Board {
         }
     }
 
+    /**
+     * Method to check if there is a win condition in the board
+     * @param player Player to evaluate if it has any remaining pieces or moves
+     * @return True if the player has lost or false if the player has remaining pieces or moves
+     */
+    public boolean checkWinCondition(Piece player) {
+        ArrayList<Pair<Integer, Integer>> playerPieces = getAllPieceLocations(player);
+        if(playerPieces.isEmpty()){
+            return true;
+        }
+        else{
+            for (Pair<Integer, Integer> piece: playerPieces){
+                if (!getValidDiagonals(piece.posX, piece.posY, player).isEmpty() || !getValidJumps(piece.posX, piece.posY , player, isPieceKing(piece.posX, piece.posY), true).isEmpty()){
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
 }
