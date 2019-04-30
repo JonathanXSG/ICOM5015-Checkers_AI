@@ -21,7 +21,7 @@ public class Main {
 //		myFrame.setVisible(true);
 
         long time1 = System.nanoTime();
-        test.printBoard();
+        //test.printBoard();
 
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(0,5), new Pair<>(2,3)));
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(4,5), new Pair<>(4,3)));
@@ -30,13 +30,16 @@ public class Main {
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(2,5), new Pair<>(0,3)));
 //        test.printBoard();
 
-        Node root = new Node(null, 0, test, "Root");
+        Node root = new Node(null, -1000, test, "Root",0,0);
         createTree1(0, Piece.Black, root);
+        Node bestMove = abPruning(root, -1000, 1000, true);
+
         System.out.println(leaves.size());
         long time2 = System.nanoTime();
         root.print("",false);
         System.out.println("Time: "+ (time2-time1));
-        leaves.get(leaves.size()-1).getState().printBoard();
+        bestMove.getState().printBoard();
+        System.out.println(bestMove.getAction());
 
 //        for(int j = 0; j < tree.size(); j++){
 //        	tree.get(j).getState().printBoard();
@@ -59,8 +62,8 @@ public class Main {
         //test.getChainMoves(3, 2, Piece.Black, test, test.getValidJumps(3, 2, Piece.Black, true), test.getValidJumps(3, 2, Piece.Black, true).size(), moves, sequence);
     }
 
-    static void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence){
-        ArrayList<Pair<Integer,Integer>> extraJumps = test.getValidJumps(x,y, player, king, true);
+    static void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence, Board currentBoard){
+        ArrayList<Pair<Integer,Integer>> extraJumps = currentBoard.getValidJumps(x,y, player, king, true);
         if(extraJumps.size() == 0){
             if(!sequence.isEmpty())
                 tempMoves.add(sequence);
@@ -69,7 +72,9 @@ public class Main {
         for(int i = 0; i < extraJumps.size(); i++){
             ArrayList<Pair<Integer,Integer>> sequenceTemp = new ArrayList<>(sequence);
             sequenceTemp.add(new Pair<>(extraJumps.get(i).posX,extraJumps.get(i).posY));
-            getChainMoves(extraJumps.get(i).posX, extraJumps.get(i).posY, player, king, sequenceTemp);
+            Board hypotheticalBoard = new Board(currentBoard);
+            hypotheticalBoard.makeMove(player,new Pair<>(x,y), new Pair<>(extraJumps.get(i).posX, extraJumps.get(i).posY));
+            getChainMoves(extraJumps.get(i).posX, extraJumps.get(i).posY, player, king, sequenceTemp, hypotheticalBoard);
         }
         return;
     }
@@ -91,7 +96,7 @@ public class Main {
     		leaves.add(root);
     		return;
     	}else{
-    		Node child;
+            Node child;
     		//Getting all pieces a player controls
     		ArrayList<Pair<Integer,Integer>> pieces = root.getState().getAllPieceLocations(player);
     		boolean onlyKills = false;
@@ -107,12 +112,12 @@ public class Main {
                 }
             }
 
-    		//Only allowed jumps
+            //Only allowed jumps
     		if(onlyKills){
                 for (Pair<Integer, Integer> piece : pieces) {
                     //Get all the possible jump sequences that it the piece can do
                     getChainMoves(piece.posX, piece.posY, player,
-                            root.getState().isPieceKing(piece.posX, piece.posY), new ArrayList<>());
+                            root.getState().isPieceKing(piece.posX, piece.posY), new ArrayList<>(), root.getState());
 
                     //making all the combination of jumps and saving them
                     for (ArrayList<Pair<Integer, Integer>> tempMove : tempMoves) {
@@ -121,10 +126,11 @@ public class Main {
                             hypotheticalBoard1.makeMove(player, piece, aTempMove);
                         }
                         String action = piece.toString() + " => " + tempMove.get(tempMove.size() - 1).toString();
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1, action);
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1, action,0,0);
 
                         root.addChild(child);
                     }
+                    tempMoves = new ArrayList<>();
                 }
             //No jumps available so normal moves
     		}else{
@@ -139,7 +145,7 @@ public class Main {
                         hypotheticalBoard2.makeMove(player, piece, move);
                         String action = piece.toString() + " => " + move.toString();
 
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action);
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action,0,0);
 
                         root.addChild(child);
                     }
@@ -151,6 +157,46 @@ public class Main {
             player = (player == Piece.Black)? Piece.Red : Piece.Black;
     		for(Node childNode : root.getChildren()){
     		    createTree1(depth+1, player, childNode);
+    		}
+    	}
+    }
+    
+    public static Node abPruning(Node root, int alpha, int beta, boolean maxPlayer){
+    	Node bestNode = root;
+    	if(leaves.contains(root)){
+    		return root;
+    	}else{
+    		if(maxPlayer){
+    			//Node bestNode = root;
+    			for(int i = root.childrenNum()-1; i >= 0; i--){
+    				Node valNode = abPruning(root.child(i), alpha, beta, false); 
+    				int bestValue = Math.max(bestNode.getValue(), valNode.getValue());
+    				if(bestValue == valNode.getValue()){
+    					bestNode = valNode;
+    				}
+    				alpha = Math.max(alpha, bestNode.getValue());
+    				root.setBeta(beta);
+    				root.setAlpha(alpha);
+    				if(beta <= alpha){
+    					break;
+    				}
+        		}
+    			return bestNode;
+    		}else{
+    			for(int i = root.childrenNum()-1; i >= 0; i--){
+    				Node valNode = abPruning(root.child(i), alpha, beta, true); 
+    				int bestValue = Math.min(bestNode.getValue(), valNode.getValue());
+    				if(bestValue == valNode.getValue()){
+    					bestNode = valNode;
+    				}
+    				beta = Math.min(beta, bestNode.getValue());
+    				root.setBeta(beta);
+    				root.setAlpha(alpha);
+    				if(beta <= alpha){
+    					break;
+    				}
+	        	}
+    			return bestNode;
     		}
     	}
     }

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 public class Node {
 	
 //	private Board state;
+	private int nodeAlpha;
+	private int nodeBeta;
 	private Board board;
 	private int value;
 	private Node parentNode;
@@ -22,12 +24,14 @@ public class Node {
 	 * @param currentBoard State of the board at the current time
 	 * @param parent Parent of the current Node (null if it is the first node)
 	 */
-	public Node(Node parent, int nodeValue, Board currentBoard, String action) {
+	public Node(Node parent, int nodeValue, Board currentBoard, String action, int alpha, int beta) {
 		board = currentBoard;
 		value = nodeValue;
 		parentNode = parent;
 		actionTaken = action;
 		childrenNodes = new ArrayList<>();
+		alpha = nodeAlpha;
+		beta = nodeBeta;
 //		coordinatesMove = coordinates;
 	}
 
@@ -40,6 +44,10 @@ public class Node {
 	 */
 	public Node getParentNode(){
 		return parentNode;
+	}
+	
+	public String getAction(){
+		return actionTaken;
 	}
 
 	
@@ -75,6 +83,22 @@ public class Node {
 		value = newValue;
 	}
 	
+	public void setAlpha(int newValue){
+		nodeAlpha = newValue;
+	}
+	
+	public void setBeta(int newValue){
+		nodeBeta = newValue;
+	}
+	
+	public int getAlpha(){
+		return nodeAlpha;
+	}
+	
+	public int getBeta(){
+		return nodeBeta;
+	}
+	
 	public void addChild(Node child){
 		childrenNodes.add(child);
 	}
@@ -106,7 +130,7 @@ public class Node {
 //    }
 
 	public void print(String prefix, boolean isTail) {
-		System.out.println(prefix + (isTail ? "└── " : "├── ") + actionTaken);
+		System.out.println(prefix + (isTail ? "└── " : "├── ") + actionTaken + " V= "+value + " A= "+nodeAlpha + " B= "+nodeBeta);
 		for (int i = 0; i < childrenNodes.size() - 1; i++) {
 			childrenNodes.get(i).print(prefix + (isTail ? "    " : "│   "), false);
 		}
