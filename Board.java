@@ -408,11 +408,11 @@ public class Board {
     }
 
     /**
-     * Method to check if there is a win condition in the board
+     * Method to check if a given player has lost the game
      * @param player Player to evaluate if it has any remaining pieces or moves
      * @return True if the player has lost or false if the player has remaining pieces or moves
      */
-    public boolean checkWinCondition(Piece player) {
+    public boolean hasPlayerLost(Piece player) {
         ArrayList<Pair<Integer, Integer>> playerPieces = getAllPieceLocations(player);
         if(playerPieces.isEmpty()){
             return true;
