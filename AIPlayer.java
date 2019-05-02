@@ -22,74 +22,71 @@ public class AIPlayer {
     void createTree(int depth, Piece player, Node root){
         int Min = -1000;
         int Max = 1000;
-        if(depth == 0){
-            root.setValue(evaluator.evaluate(root.getState(), player==Piece.Black? Piece.Red: Piece.Black, false));
-        }else{
-            Node child;
-            //Getting all pieces a player controls
-            ArrayList<Pair<Integer,Integer>> pieces = root.getState().getAllPieceLocations(player);
-            boolean onlyKills = false;
+        Node child;
+        //Getting all pieces a player controls
+        ArrayList<Pair<Integer,Integer>> pieces = root.getState().getAllPieceLocations(player);
+        boolean onlyKills = false;
 
-            //Check if the player has a move that can jump, if so these are the only moves allowed
-            for (Pair<Integer, Integer> piece : pieces) {
-                ArrayList<Pair<Integer, Integer>> verifyCaptures = root.getState()
-                        .getValidJumps(piece.posX, piece.posY, player,
-                                root.getState().isPieceKing(piece.posX, piece.posY), true);
-                if (verifyCaptures.size() > 0) {
-                    onlyKills = true;
-                    break;
-                }
+        //Check if the player has a move that can jump, if so these are the only moves allowed
+        for (Pair<Integer, Integer> piece : pieces) {
+            ArrayList<Pair<Integer, Integer>> verifyCaptures = root.getState()
+                    .getValidJumps(piece.posX, piece.posY, player,
+                            root.getState().isPieceKing(piece.posX, piece.posY), true);
+            if (verifyCaptures.size() > 0) {
+                onlyKills = true;
+                break;
             }
+        }
 
-            //Only allowed jumps
-            if(onlyKills){
-                for (Pair<Integer, Integer> piece : pieces) {
-                    //Get all the possible jump sequences that it the piece can do
-                    getChainMoves(piece.posX, piece.posY, player,
-                            root.getState().isPieceKing(piece.posX, piece.posY), new ArrayList<>(), root.getState());
+        //Only allowed jumps
+        if(onlyKills){
+            for (Pair<Integer, Integer> piece : pieces) {
+                //Get all the possible jump sequences that it the piece can do
+                getChainMoves(piece.posX, piece.posY, player,
+                        root.getState().isPieceKing(piece.posX, piece.posY), new ArrayList<>(), root.getState());
 
-                    //making all the combination of jumps and saving them
-                    for (ArrayList<Pair<Integer, Integer>> tempMove : tempMoves) {
-                        Board hypotheticalBoard1 = new Board(root.getState());
-                        for (Pair<Integer, Integer> aTempMove : tempMove) {
-                            hypotheticalBoard1.makeMove(player, piece, aTempMove);
-                        }
-                        String action = piece.toString() + " => " + tempMove.get(tempMove.size() - 1).toString();
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1,
-                                new Pair[]{piece,tempMove.get(tempMove.size() - 1)},0,0);
-
-                        root.addChild(child);
+                //making all the combination of jumps and saving them
+                for (ArrayList<Pair<Integer, Integer>> tempMove : tempMoves) {
+                    Board hypotheticalBoard1 = new Board(root.getState());
+                    for (Pair<Integer, Integer> aTempMove : tempMove) {
+                        hypotheticalBoard1.makeMove(player, piece, aTempMove);
                     }
-                    tempMoves = new ArrayList<>();
-                }
-                //No jumps available so normal moves
-            }else{
-                for (Pair<Integer, Integer> piece : pieces) {
-                    //Get all possible normal moves not being blocked by another piece
-                    ArrayList<Pair<Integer, Integer>> moves = root.getState()
-                            .getValidDiagonals(piece.posX, piece.posY, player);
+                    String action = piece.toString() + " => " + tempMove.get(tempMove.size() - 1).toString();
+                    child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1,
+                            new Pair[]{piece,tempMove.get(tempMove.size() - 1)},0,0);
 
-                    //Do all of those moves and save them to the tree
-                    for (Pair<Integer, Integer> move : moves) {
-                        Board hypotheticalBoard2 = new Board(root.getState());
-                        hypotheticalBoard2.makeMove(player, piece, move);
+                    root.addChild(child);
+                }
+                tempMoves = new ArrayList<>();
+            }
+            //No jumps available so normal moves
+        }else{
+            for (Pair<Integer, Integer> piece : pieces) {
+                //Get all possible normal moves not being blocked by another piece
+                ArrayList<Pair<Integer, Integer>> moves = root.getState()
+                        .getValidDiagonals(piece.posX, piece.posY, player);
+
+                //Do all of those moves and save them to the tree
+                for (Pair<Integer, Integer> move : moves) {
+                    Board hypotheticalBoard2 = new Board(root.getState());
+                    hypotheticalBoard2.makeMove(player, piece, move);
 //                        String action = piece.toString() + " => " + move.toString();
 
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2,
-                                new Pair[]{piece,move},0,0);
+                    child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2,
+                            new Pair[]{piece,move},0,0);
 
-                        root.addChild(child);
-                    }
+                    root.addChild(child);
                 }
             }
+        }
 
-            //Once we are done doing all the possible moves for each piece from this player, we change players
-            //and do each possible move by the opponent on those moves by the player
-            player = (player == Piece.Black)? Piece.Red : Piece.Black;
+        //Once we are done doing all the possible moves for each piece from this player, we change players
+        //and do each possible move by the opponent on those moves by the player
+        player = (player == Piece.Black)? Piece.Red : Piece.Black;
+        if(depth > 1)
             for(Node childNode : root.getChildren()){
                 createTree(depth-1, player, childNode);
             }
-        }
     }
 
     void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence, Board currentBoard){
@@ -111,6 +108,7 @@ public class AIPlayer {
     Node abPruning(Node root, int alpha, int beta, int depth, boolean maxPlayer){
         Node bestNode = root;
         if(root.childrenNum()==0){
+            root.setValue(evaluator.evaluate(root.getState(), maxPlayer? Piece.Red : Piece.Black, false));
 //            root.setValue(root.getState().evaluationFunction(maxPlayer? Piece.Red : Piece.Black));
             return root;
         }else{

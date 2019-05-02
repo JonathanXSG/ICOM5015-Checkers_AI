@@ -28,46 +28,46 @@ public class Main {
 //    	myFrame.pack();
 //		myFrame.setVisible(true);
 
-//        char[][] initial = {
-//                {' ','b',' ',' ',' ','r',' ','r'},
-//                {'b',' ','b',' ',' ',' ','r',' '},
-//                {' ','b',' ',' ',' ','r',' ','r'},
-//                {'b',' ','b',' ',' ',' ','r',' '},
-//                {' ','b',' ',' ',' ','r',' ','r'},
-//                {'b',' ','b',' ',' ',' ','r',' '},
-//                {' ','b',' ',' ',' ','r',' ','r'},
-//                {'b',' ','b',' ',' ',' ','r',' '},
-//        };
         char[][] initial = {
-                {' ',' ',' ',' ',' ',' ',' ','b'},
-                {' ',' ',' ',' ',' ',' ','b',' '},
-                {' ',' ',' ',' ',' ','b',' ','b'},
-                {' ',' ',' ',' ',' ',' ','b',' '},
-                {' ',' ',' ',' ',' ','b',' ','b'},
-                {' ',' ','b',' ',' ',' ',' ',' '},
-                {' ','b',' ',' ',' ','b',' ','r'},
-                {'b',' ',' ',' ',' ',' ','b',' '},
+                {' ','b',' ',' ',' ','r',' ','r'},
+                {'b',' ','b',' ',' ',' ','r',' '},
+                {' ','b',' ',' ',' ','r',' ','r'},
+                {'b',' ','b',' ',' ',' ','r',' '},
+                {' ','b',' ',' ',' ','r',' ','r'},
+                {'b',' ','b',' ',' ',' ','r',' '},
+                {' ','b',' ',' ',' ','r',' ','r'},
+                {'b',' ','b',' ',' ',' ','r',' '},
         };
+//        char[][] initial = {
+//                {' ',' ',' ',' ',' ',' ',' ','b'},
+//                {' ',' ',' ',' ',' ',' ','b',' '},
+//                {' ',' ',' ',' ',' ','b',' ','b'},
+//                {' ',' ',' ',' ',' ',' ','b',' '},
+//                {' ',' ',' ',' ',' ','b',' ','b'},
+//                {' ',' ','b',' ',' ',' ',' ',' '},
+//                {' ','b',' ',' ',' ','b',' ','r'},
+//                {'b',' ',' ',' ',' ',' ','b',' '},
+//        };
         initialBoard = new Board(initial);
 
-//        long time1 = System.nanoTime();
+        long time1 = System.nanoTime();
         initialBoard.printBoard();
 
         Node root = new Node(null, -1000, initialBoard, null,0,0);
         EvaluationFunction evaluationFunction = new MediumEvaluation();
         EvaluationFunction evaluationFunction2 = new MediumEvaluation();
-        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,3, evaluationFunction);
+        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,4, evaluationFunction);
         AIPlayer aiPlayer2 =  new AIPlayer(Piece.Red,3, evaluationFunction2);
         Node bestMove;
-
-//        long time2 = System.nanoTime();
+        int round = 0;
+        boolean pass=true;
 
         while (!initialBoard.hasPlayerLost(Piece.Black) && !initialBoard.hasPlayerLost(Piece.Red)){
             // Black turn
             aiPlayer.calculateMove(root);
             bestMove = aiPlayer.getNextMove();
-            initialBoard.makeMove(Piece.Black, bestMove.getAction()[0], bestMove.getAction()[1]);
-            System.out.println("BLACK");
+            pass=initialBoard.makeMove(Piece.Black, bestMove.getAction()[0], bestMove.getAction()[1]);
+            System.out.println("BLACK "+round);
             initialBoard.printBoard();
             root = bestMove;
 
@@ -75,12 +75,15 @@ public class Main {
                 break;
             //Red turn
             aiPlayer2.calculateMove(root);
+
             bestMove = aiPlayer2.getNextMove();
-            initialBoard.makeMove(Piece.Red, bestMove.getAction()[0], bestMove.getAction()[1]);
-            System.out.println("RED");
+            pass=initialBoard.makeMove(Piece.Red, bestMove.getAction()[0], bestMove.getAction()[1]);
+            System.out.println("RED " + round);
             initialBoard.printBoard();
             root = bestMove;
+            round++;
         }
+        long time2 = System.nanoTime();
 
         if(initialBoard.hasPlayerLost(Piece.Black))
             System.out.println("RED PLAYER WON");
@@ -88,7 +91,7 @@ public class Main {
             System.out.println("BLACK PLAYER WON");
 
 //        root.print("",false);
-//        System.out.println("Time: "+ (time2-time1));
+        System.out.println("Time: "+ (time2-time1));
 //        System.out.println(bestMove.getAction());
 
 //        System.out.println(bestMove.getValue());
