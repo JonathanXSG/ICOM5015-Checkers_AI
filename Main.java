@@ -3,10 +3,30 @@
 //import java.util.*;
 //import java.io.*;
 
+import javax.swing.JFrame;
+
 public class Main {
     private static Board initialBoard;
 
     public static void main(String[] args) {
+    	
+    	JFrame myFrame = new JFrame("Checkers");
+		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		//myFrame.setSize(525, 550);
+    	Piece initialPiece = Piece.Black;
+    	BoardUI board = new BoardUI(test, initialPiece);
+    	for(int i = 0; i < test.getBoardState().length; i++){
+    		for(int j = 0; j < test.getBoardState().length; j++){
+    			if(test.getBoardState()[i][j] == 'r'){
+    				board.add(new Checker(Piece.Red), j, i);
+    			}else if(test.getBoardState()[i][j] == 'b'){
+    				board.add(new Checker(Piece.Black), j, i);
+    			}
+    		}
+    	}
+    	myFrame.setContentPane(board);
+    	myFrame.pack();
+		myFrame.setVisible(true);
 		//colaborator test push
 //		JFrame myFrame = new JFrame("Checkers");
 //		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

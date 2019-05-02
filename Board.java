@@ -98,28 +98,32 @@ public class Board {
 	        return false;
         else if(board(finalCord) != ' ')
             return false;
-        else if(!getValidDiagonals(initialCord.posX, initialCord.posY, player).contains(finalCord) && !getValidJumps(initialCord.posX, initialCord.posY, player, king,true).contains(finalCord)) {
+        else if(!getValidDiagonals(initialCord.posX, initialCord.posY, player).contains(finalCord) && !getValidJumps(initialCord.posX, initialCord.posY, player, king,true).contains(finalCord))
             return false;
-        }
-        else if(!king && player == Piece.Black && finalCord.posY < initialCord.posY){
+        else if(getValidDiagonals(initialCord.posX, initialCord.posY, player).contains(finalCord) && jumpsAvailable(player))
             return false;
-        }
-        else if(!king && player == Piece.Red && finalCord.posY > initialCord.posY){
-            return false;
-        }
         else{
             if(getValidJumps(initialCord.posX, initialCord.posY, player, king, true).contains(finalCord)){
                 //Jump over opponent
                 board(new Pair<>((finalCord.posX+initialCord.posX)/2,(finalCord.posY+initialCord.posY)/2), ' ');
             }
+            board(finalCord, board(initialCord));
             if(finalCord.posY == size-1 || finalCord.posY == 0)
-                board(finalCord, Character.toUpperCase(board(initialCord)));
-            else
-                board(finalCord, board(initialCord));
+                makeKing(finalCord.posX, finalCord.posY);
+                //board(finalCord, Character.toUpperCase(board(initialCord)));
             board(initialCord, ' ');
             return true;
         }
     }
+
+    public boolean jumpsAvailable(Piece player){
+	    for (Pair<Integer, Integer> piece: getAllPieceLocations(player)){
+	        if(!getValidJumps(piece.posX, piece.posY, player, isPieceKing(piece.posX, piece.posY), true).isEmpty())
+	            return true;
+        }
+	    return false;
+    }
+
 
     public int[][] calcValues(Piece player){
 	    int[][] values = new int[size][size];
@@ -349,6 +353,26 @@ public class Board {
             }
             System.out.println();
             if(y==7) System.out.println(ConsoleColors.YELLOW_BOLD+"   0  1  2  3  4  5  6  7"+ConsoleColors.RESET);
+        }
+    }
+
+    /**
+     * Method to check if a given player has lost the game
+     * @param player Player to evaluate if it has any remaining pieces or moves
+     * @return True if the player has lost or false if the player has remaining pieces or moves
+     */
+    public boolean hasPlayerLost(Piece player) {
+        ArrayList<Pair<Integer, Integer>> playerPieces = getAllPieceLocations(player);
+        if(playerPieces.isEmpty()){
+            return true;
+        }
+        else{
+            for (Pair<Integer, Integer> piece: playerPieces){
+                if (!getValidDiagonals(piece.posX, piece.posY, player).isEmpty() || !getValidJumps(piece.posX, piece.posY , player, isPieceKing(piece.posX, piece.posY), true).isEmpty()){
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
