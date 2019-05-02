@@ -339,10 +339,10 @@ public class Board {
             for(int x=0; x<size; x++){
                 StringBuilder buffer = new StringBuilder();
                 if(boardState[x][y] == 'B' || boardState[x][y] == 'b')
-                    buffer.append(ConsoleColors.RESET).append(ConsoleColors.PURPLE + " ")
+                    buffer.append(ConsoleColors.RESET).append(ConsoleColors.PURPLE_BOLD + " ")
                             .append(boardState[x][y]).append(" ");
                 else if(boardState[x][y] == 'R' || boardState[x][y] == 'r')
-                    buffer.append(ConsoleColors.RESET).append(ConsoleColors.RED + " ")
+                    buffer.append(ConsoleColors.RESET).append(ConsoleColors.RED_BOLD + " ")
                             .append(boardState[x][y]).append(" ");
                 else if((x+y)%2 != 0)
                     buffer.append(ConsoleColors.RESET).append(ConsoleColors.WHITE).append("   ");

@@ -15,7 +15,7 @@ public class Node {
 	private Board board;
 	private int value;
 	private Node parentNode;
-	private Pair<Integer,Integer>[] actionTaken;
+	private ArrayList<Pair<Integer,Integer>> actionTaken;
 	private ArrayList<Node> childrenNodes;
 //	private Pair<Integer,Integer> coordinatesMove;
 	
@@ -24,7 +24,7 @@ public class Node {
 	 * @param currentBoard State of the board at the current time
 	 * @param parent Parent of the current Node (null if it is the first node)
 	 */
-	public Node(Node parent, int nodeValue, Board currentBoard, Pair<Integer,Integer>[] action, int alpha, int beta) {
+	public Node(Node parent, int nodeValue, Board currentBoard, ArrayList<Pair<Integer,Integer>> action, int alpha, int beta) {
 		board = currentBoard;
 		value = nodeValue;
 		parentNode = parent;
@@ -35,10 +35,17 @@ public class Node {
 //		coordinatesMove = coordinates;
 	}
 
-	public Node() {
-	}
+    public Node(Node oldNode) {
+        board = oldNode.board;
+        value = -1000;
+        parentNode = null;
+        actionTaken = null;
+        childrenNodes = new ArrayList<>();
+        nodeAlpha = 0;
+        nodeBeta = 0;
+    }
 
-	/**
+    /**
 	 * Method for finding the node that is the parent of the current node
 	 * @return Current Node's Parent Node
 	 */
@@ -46,7 +53,7 @@ public class Node {
 		return parentNode;
 	}
 	
-	public Pair<Integer,Integer>[] getAction(){
+	public ArrayList<Pair<Integer,Integer>> getAction(){
 		return actionTaken;
 	}
 
@@ -132,7 +139,8 @@ public class Node {
 	public void print(String prefix, boolean isTail) {
 		String a = childrenNum()==0? "" : " A= "+nodeAlpha;
 		String b = childrenNum()==0? "" : " B= "+nodeBeta;
-		String action = actionTaken==null? "Root" : actionTaken[0].toString() + "=>" + actionTaken[1].toString();
+		String action = actionTaken==null? "Root" : actionTaken.get(0).toString()
+                + "=>" + actionTaken.get(actionTaken.size()-1).toString();
 
 		System.out.println(prefix + (isTail ? "└── " : "├── ") + action + " V= "+value + a + b);
 		for (int i = 0; i < childrenNodes.size() - 1; i++) {
