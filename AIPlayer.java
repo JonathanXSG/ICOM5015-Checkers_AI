@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class AIPlayer {
-    private static ArrayList<ArrayList<Pair<Integer,Integer>>> tempMoves = new ArrayList<>();
+    private ArrayList<ArrayList<Pair<Integer,Integer>>> tempMoves = new ArrayList<>();
     private Piece playerPiece;
     private Node nextMove;
     private int maxDepth;
