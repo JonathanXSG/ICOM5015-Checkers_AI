@@ -23,7 +23,8 @@ public class Board {
 
     public Board(char[][] initialState) {
     	boardState = new char[initialState.length][initialState.length];
-    	for(int y=0; y<initialState.length; y++){
+        this.size = initialState.length;
+        for(int y=0; y<initialState.length; y++){
             for(int x=0; x<initialState.length; x++){
                 boardState[x][y] = initialState[x][y];
             }
@@ -32,7 +33,6 @@ public class Board {
             boardValues = new int[size][size];
             setBoardValues();
         }
-        this.size = initialState.length;
     }
 
     public Board(Board board) {
@@ -195,7 +195,7 @@ public class Board {
     	            diagonals.add(new Pair<>(x+modifier, y+modifier));
     		 if(!isInvalidCord(x-modifier, y+modifier) && boardState[x-modifier][y+modifier] == ' ')
     	            diagonals.add(new Pair<>(x-modifier, y+modifier));
-    	}else if(boardState[x][y] != ' ' && (boardState[x][y] == (player == Piece.Black? 'b' : 'r'))){
+    	}else if(boardState[x][y] != ' ' && isPieceKing(x,y)){
     		if(!isInvalidCord(x+modifier, y+modifier)  && boardState[x+modifier][y+modifier] == ' ')
                 diagonals.add(new Pair<>(x+modifier, y+modifier));
             if(!isInvalidCord(x+modifier, y-modifier)  && boardState[x+modifier][y-modifier] == ' ')

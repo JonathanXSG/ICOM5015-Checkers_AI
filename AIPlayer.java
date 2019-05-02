@@ -55,7 +55,8 @@ public class AIPlayer {
                             hypotheticalBoard1.makeMove(player, piece, aTempMove);
                         }
                         String action = piece.toString() + " => " + tempMove.get(tempMove.size() - 1).toString();
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1, action,0,0);
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1,
+                                new Pair[]{piece,tempMove.get(tempMove.size() - 1)},0,0);
 
                         root.addChild(child);
                     }
@@ -72,9 +73,10 @@ public class AIPlayer {
                     for (Pair<Integer, Integer> move : moves) {
                         Board hypotheticalBoard2 = new Board(root.getState());
                         hypotheticalBoard2.makeMove(player, piece, move);
-                        String action = piece.toString() + " => " + move.toString();
+//                        String action = piece.toString() + " => " + move.toString();
 
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action,0,0);
+                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2,
+                                new Pair[]{piece,move},0,0);
 
                         root.addChild(child);
                     }
@@ -156,4 +158,7 @@ public class AIPlayer {
         }
     }
 
+    public Node getNextMove() {
+        return nextMove;
+    }
 }

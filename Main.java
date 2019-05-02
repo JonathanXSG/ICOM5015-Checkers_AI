@@ -4,7 +4,7 @@
 //import java.io.*;
 
 public class Main {
-    private static Board test = new Board(8);
+    private static Board initialBoard;
 
     public static void main(String[] args) {
 		//colaborator test push
@@ -16,22 +16,70 @@ public class Main {
 //		myFrame.add(board);
 //		myFrame.setVisible(true);
 
-        long time1 = System.nanoTime();
-        //test.printBoard();
+        char[][] initial = {
+                {' ','b',' ',' ',' ','r',' ','r'},
+                {'b',' ','b',' ',' ',' ','r',' '},
+                {' ','b',' ',' ',' ','r',' ','r'},
+                {'b',' ','b',' ',' ',' ','r',' '},
+                {' ','b',' ',' ',' ','r',' ','r'},
+                {'b',' ','b',' ',' ',' ','r',' '},
+                {' ','b',' ',' ',' ','r',' ','r'},
+                {'b',' ','b',' ',' ',' ','r',' '},
+        };
+//        char[][] initial = {
+//                {' ',' ',' ',' ',' ',' ',' ','r'},
+//                {' ',' ',' ',' ',' ',' ','r',' '},
+//                {' ',' ',' ',' ',' ','r',' ','r'},
+//                {' ',' ',' ',' ',' ',' ','r',' '},
+//                {' ',' ',' ',' ',' ','r',' ','r'},
+//                {' ',' ','r',' ',' ',' ','r',' '},
+//                {' ','r',' ',' ',' ','r',' ','r'},
+//                {'b',' ',' ',' ',' ',' ','r',' '},
+//        };
+        initialBoard = new Board(initial);
 
-        Node root = new Node(null, -1000, test, "Root",0,0);
+//        long time1 = System.nanoTime();
+        initialBoard.printBoard();
+
+        Node root = new Node(null, -1000, initialBoard, null,0,0);
         EvaluationFunction evaluationFunction = new MediumEvaluation();
-        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,7, evaluationFunction);
-        Node bestMove=aiPlayer.calculateMove(root);
+        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,3, evaluationFunction);
+        AIPlayer aiPlayer2 =  new AIPlayer(Piece.Red,3, evaluationFunction);
 
-        long time2 = System.nanoTime();
-        root.print("",false);
-        System.out.println("Time: "+ (time2-time1));
-        bestMove.getState().printBoard();
-        System.out.println(bestMove.getAction());
-        System.out.println(bestMove.getValue());
-        printArray(bestMove.getState().calcValues(Piece.Black));
-        evaluationFunction.evaluate(bestMove.getState(), Piece.Black, true);
+        aiPlayer.calculateMove(root);
+        root.print("", false);
+        Node bestMove = aiPlayer.getNextMove();
+//        long time2 = System.nanoTime();
+
+
+        initialBoard.makeMove(Piece.Black, bestMove.getAction()[0], bestMove.getAction()[1]);
+        initialBoard.printBoard();
+
+        aiPlayer2.calculateMove(root);
+        bestMove = aiPlayer2.getNextMove();
+
+        initialBoard.makeMove(Piece.Red, bestMove.getAction()[0], bestMove.getAction()[1]);
+        initialBoard.printBoard();
+
+        aiPlayer.calculateMove(root);
+        bestMove = aiPlayer.getNextMove();
+
+        initialBoard.makeMove(Piece.Black, bestMove.getAction()[0], bestMove.getAction()[1]);
+        initialBoard.printBoard();
+
+        aiPlayer2.calculateMove(root);
+        bestMove = aiPlayer2.getNextMove();
+
+        initialBoard.makeMove(Piece.Red, bestMove.getAction()[0], bestMove.getAction()[1]);
+        initialBoard.printBoard();
+
+//        root.print("",false);
+//        System.out.println("Time: "+ (time2-time1));
+//        System.out.println(bestMove.getAction());
+
+//        System.out.println(bestMove.getValue());
+//        printArray(bestMove.getState().calcValues(Piece.Black));
+//        evaluationFunction.evaluate(bestMove.getState(), Piece.Black, true);
 //        System.out.println(bestMove.getState().evaluationFunction(Piece.Black));
 
     }
