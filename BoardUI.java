@@ -53,11 +53,17 @@ private final static int SQUAREDIM = (int) (Checker.getDimension() * 1.25);
    // list of Checker objects and their initial positions
 
    private List<PosCheck> posChecks;
+   
+   private Board gameBoard;
+   
+   private Piece player;
 
-   public BoardUI()
+   public BoardUI(Board initialBoard, Piece initialPlayer)
    {
       posChecks = new ArrayList<>();
       dimPrefSize = new Dimension(BOARDDIM, BOARDDIM);
+      gameBoard = initialBoard;
+      player = initialPlayer;
 
       addMouseListener(new MouseAdapter()
                        {
@@ -116,10 +122,17 @@ private final static int SQUAREDIM = (int) (Checker.getDimension() * 1.25);
                                    BoardUI.this.posCheck.cx = oldcx;
                                    BoardUI.this.posCheck.cy = oldcy;
                                 }
-                             
-                             	if(){
-                             		
-                             	}
+                                	
+                             boolean valid = gameBoard.makeMove(player, new Pair<Integer, Integer>((oldcx)/SQUAREDIM, oldcy/SQUAREDIM), new Pair<Integer, Integer>((x)/SQUAREDIM, y/SQUAREDIM));
+                             if(!valid){
+                            	posCheck.cx = oldcx;
+                            	posCheck.cy = oldcy;
+                             }else{
+                            	 changePlayer();
+                            	 update();
+                             }
+//                             update();
+
                              posCheck = null;
                              repaint();
                           }
@@ -173,15 +186,24 @@ private final static int SQUAREDIM = (int) (Checker.getDimension() * 1.25);
    protected void paintComponent(Graphics g)
    {
       paintCheckerBoard(g);
-      for (PosCheck posCheck: posChecks)
-         if (posCheck != BoardUI.this.posCheck)
-            posCheck.checker.draw(g, posCheck.cx, posCheck.cy);
+      
+      for (PosCheck posCheck: posChecks){
+//    	  if(gameBoard.getBoardState()[posCheck.cx/SQUAREDIM][posCheck.cy/SQUAREDIM] == ' '){
+//    		  posChecks.remove(posCheck);
+//    	  }
+    	  if (posCheck != BoardUI.this.posCheck){
+    		  posCheck.checker.draw(g, posCheck.cx, posCheck.cy);  
+    	  }
+      }
+    	 
 
       // Draw dragged checker last so that it appears over any underlying 
       // checker.
 
       if (posCheck != null)
          posCheck.checker.draw(g, posCheck.cx, posCheck.cy);
+      
+  
    }
 
    private void paintCheckerBoard(Graphics g)
@@ -200,6 +222,7 @@ private final static int SQUAREDIM = (int) (Checker.getDimension() * 1.25);
             g.setColor((g.getColor() == Color.BLACK) ? Color.WHITE : Color.BLACK);
          }
       }
+      
    }
 
    // positioned checker helper class
@@ -210,4 +233,30 @@ private final static int SQUAREDIM = (int) (Checker.getDimension() * 1.25);
       public int cx;
       public int cy;
    }
+   
+	private void changePlayer(){
+		if(player == Piece.Black){
+			player = Piece.Red;
+		}else if(player == Piece.Red){
+			player = Piece.Black;
+		}
+		   
+	}
+	
+	private void update(){
+		for(int i = 0; i < posChecks.size(); i++){
+			if(gameBoard.getBoardState()[posChecks.get(i).cx/SQUAREDIM][posChecks.get(i).cy/SQUAREDIM] == ' '){
+				posChecks.remove(i);
+			}
+		}
+//		for (PosCheck posCheck: posChecks){
+//			if(gameBoard.getBoardState()[posCheck.cx/SQUAREDIM][posCheck.cy/SQUAREDIM] == ' '){
+//   			 posChecks.remove(posCheck);
+//			}
+//   	 	}
+	}
+	
+	
+   
+   
 }
