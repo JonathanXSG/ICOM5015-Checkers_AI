@@ -27,7 +27,7 @@ public class Main {
     	while(!valid1){
     		System.out.print("Select which one of your pieces you want to move (ej.: 1,2): ");
         	initialCord  = input.next();
-        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2))){
+        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) && initialCord.length() == 3 && initialCord.charAt(1) == ',' ){
         		x1 =  Character.getNumericValue(initialCord.charAt(0));
         		y1 =  Character.getNumericValue(initialCord.charAt(2));
         		valid1 = true;
@@ -39,7 +39,7 @@ public class Main {
     	while(!valid2){
     		System.out.print("Select where do you want to move: (ej.: 1,2): ");
         	finalCord  = input.next();
-        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2))){
+        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) && finalCord.length() == 3 && finalCord.charAt(1) == ','){
         		x2 =  Character.getNumericValue(finalCord.charAt(0));
         		y2 =  Character.getNumericValue(finalCord.charAt(2));
         		valid2 = true;
@@ -54,6 +54,8 @@ public class Main {
     	input.close();
     	if(validMove = test.makeMove(Piece.Red, firstCord, secondCord)){
     		System.out.println("Succesfully moved the piece");
+    	}else{
+    		System.out.println("Error moving the piece");
     	}
         long time1 = System.nanoTime();
         //test.printBoard();
