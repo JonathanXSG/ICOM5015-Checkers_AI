@@ -3,9 +3,10 @@
 //import java.util.*;
 //import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-public class Main {
+import javax.swing.JFrame;
+
+public class Main2 {
     private static Board test = new Board(8);
     private static ArrayList<ArrayList<Pair<Integer,Integer>>> tempMoves = new ArrayList<>();
     private static ArrayList<Node> leaves = new ArrayList<Node>();
@@ -13,48 +14,32 @@ public class Main {
 
     public static void main(String[] args) {
     	
-    	Scanner input = new Scanner(System.in);
-    	boolean valid1 = false;
-    	boolean valid2 = false;
-    	boolean validMove = false;
-    	String initialCord = null;
-    	String finalCord = null;
-    	int x1 = 0;
-    	int y1 = 0;
-    	int x2 = 0;
-    	int y2 = 0;
-    	
-    	while(!valid1){
-    		System.out.print("Select which one of your pieces you want to move (ej.: 1,2): ");
-        	initialCord  = input.next();
-        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2))){
-        		x1 =  Character.getNumericValue(initialCord.charAt(0));
-        		y1 =  Character.getNumericValue(initialCord.charAt(2));
-        		valid1 = true;
-        	}else{
-        		System.out.println("Please enter valid information");
-        	}
+    	JFrame myFrame = new JFrame("Checkers");
+		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		//myFrame.setSize(525, 550);
+    	Piece initialPiece = Piece.Black;
+    	BoardUI board = new BoardUI(test, initialPiece);
+    	for(int i = 0; i < test.getBoardState().length; i++){
+    		for(int j = 0; j < test.getBoardState().length; j++){
+    			if(test.getBoardState()[i][j] == 'r'){
+    				board.add(new Checker(Piece.Red), j, i);
+    			}else if(test.getBoardState()[i][j] == 'b'){
+    				board.add(new Checker(Piece.Black), j, i);
+    			}
+    		}
     	}
-    	
-    	while(!valid2){
-    		System.out.print("Select where do you want to move: (ej.: 1,2): ");
-        	finalCord  = input.next();
-        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2))){
-        		x2 =  Character.getNumericValue(finalCord.charAt(0));
-        		y2 =  Character.getNumericValue(finalCord.charAt(2));
-        		valid2 = true;
-        	}else{
-        		System.out.println("Please enter valid information");
-        	}
-    	}
-    	
-    	System.out.println("Move from: " + initialCord + " to " + finalCord);
-    	Pair<Integer,Integer> firstCord = new Pair<Integer,Integer>(x1,y1);
-    	Pair<Integer,Integer> secondCord = new Pair<Integer,Integer>(x2,y2);
-    	input.close();
-    	if(validMove = test.makeMove(Piece.Red, firstCord, secondCord)){
-    		System.out.println("Succesfully moved the piece");
-    	}
+    	myFrame.setContentPane(board);
+    	myFrame.pack();
+		myFrame.setVisible(true);
+		//colaborator test push
+//		JFrame myFrame = new JFrame("Checkers");
+//		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//		myFrame.setLocation(400, 150);
+//		myFrame.setSize(525, 550);
+//		Checkerboard board = new Checkerboard();
+//		myFrame.add(board);
+//		myFrame.setVisible(true);
+
         long time1 = System.nanoTime();
         //test.printBoard();
 

@@ -123,13 +123,15 @@ private final static int SQUAREDIM = (int) (Checker.getDimension() * 1.25);
                                    BoardUI.this.posCheck.cy = oldcy;
                                 }
                                 	
-                             boolean valid = gameBoard.makeMove(player, new Pair<Integer, Integer>((oldcx)/SQUAREDIM, oldcy/SQUAREDIM), new Pair<Integer, Integer>((x)/SQUAREDIM, y/SQUAREDIM));
+                             boolean valid = gameBoard.makeMove(player, new Pair<Integer, Integer>((oldcx)/SQUAREDIM, oldcy/SQUAREDIM), new Pair<Integer, Integer>((x)/SQUAREDIM, (y)/SQUAREDIM));
                              if(!valid){
                             	posCheck.cx = oldcx;
                             	posCheck.cy = oldcy;
                              }else{
                             	 changePlayer();
                             	 update();
+//                            	 posCheck.cx = posCheck.cx;
+//                            	 posCheck.cy = posCheck.cy;
                              }
 //                             update();
 
