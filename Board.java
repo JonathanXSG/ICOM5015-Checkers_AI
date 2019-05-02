@@ -3,22 +3,21 @@ import java.util.ArrayList;
 public class Board {
 
     private char[][] boardState;
-    private int[][] boardValues;
+    private static int[][] boardValues;
     private int size;
-    private static final int PIECE_VALUE = 2;
-    private static final int KING_VALUE = 5;
-    private static final int CAPTURE_VALUE = 10;
 
 	public Board(int size) {
 		boardState = new char[size][size];
-        boardValues = new int[size][size];
         for(int y=0; y<size; y++){
             for(int x=0; x<size; x++){
                 boardState[x][y] = ' ';
             }
         }
         this.size = size;
-        setBoardValues();
+        if(boardValues == null){
+            boardValues = new int[size][size];
+            setBoardValues();
+        }
         setPieces();
 	}
 
@@ -29,20 +28,19 @@ public class Board {
                 boardState[x][y] = initialState[x][y];
             }
         }
-        //boardState = initialState;
-        boardValues = new int[initialState.length][initialState.length];
+        if(boardValues == null){
+            boardValues = new int[size][size];
+            setBoardValues();
+        }
         this.size = initialState.length;
-        setBoardValues();
     }
 
     public Board(Board board) {
         this.size = board.boardState.length;
         boardState = new char[size][size];
-        boardValues = new int[size][size];
         for(int y=0; y<size; y++){
             for(int x=0; x<size; x++){
                 boardState[x][y] = board.boardState[x][y];
-                boardValues[x][y] = board.boardValues[x][y];
             }
         }
     }
@@ -66,7 +64,8 @@ public class Board {
             minRow++;
             maxCol--;
             maxRow--;
-			value--;
+			value-=2;
+			value = value<0? 0 : value;
 		}
     }
 
@@ -91,7 +90,6 @@ public class Board {
         }
 	}
 
-	//TODO: Implement checking if a move is valid in terms of diagonal move or jumping over piece
     public boolean makeMove(Piece player, Pair<Integer,Integer> initialCord, Pair<Integer,Integer> finalCord){
 	    boolean king = isPieceKing(initialCord.posX, initialCord.posY);
         if(isInvalidCord(initialCord) || isInvalidCord(finalCord))
@@ -131,38 +129,24 @@ public class Board {
                     values[x][y] = 0;
                 else
                     values[x][y] = ((Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R')) ? 1:-1)
-                            * boardValues[x][y] * (isPieceKing(x,y)? KING_VALUE: PIECE_VALUE) ;
+                            * (boardValues[x][y] + (isPieceKing(x,y)?
+                            CheckersValues.KING_VALUE: CheckersValues.PIECE_VALUE)) ;
                 }
 		}
 		return values;
     }
 
-    private int calcBoardValue(Piece player){
+    public int calcBoardValue(Piece player){
         int value = 0;
         for(int x = 0; x<size; x++){
             for(int y = 0; y < size; y++){
                 if(boardState[x][y] != ' ')
                     value += ((Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R')) ? 1:-1)
-                            * boardValues[x][y] * (isPieceKing(x,y)? KING_VALUE: PIECE_VALUE) ;
+                            * (boardValues[x][y] * (isPieceKing(x,y)?
+                            CheckersValues.KING_VALUE: CheckersValues.PIECE_VALUE)) ;
             }
         }
         return value;
-    }
-
-    public int evaluationFunction(Piece player){
-        int values = calcBoardValue(player);
-        int offensiveJumps = 0;
-        int defensiveJumps = 0;
-        for(Pair<Integer,Integer> cord : getAllPieceLocations(player)){
-            offensiveJumps += getValidJumps(cord.posX, cord.posY, player,
-                    isPieceKing(cord.posX, cord.posY),true).size();
-            defensiveJumps += getValidJumps(cord.posX, cord.posY, player,
-                    isPieceKing(cord.posX, cord.posY),false).size();
-        }
-        offensiveJumps *= CAPTURE_VALUE;
-        defensiveJumps *= -CAPTURE_VALUE;
-
-        return values+offensiveJumps+defensiveJumps;
     }
 
     /**
@@ -223,49 +207,6 @@ public class Board {
     	}
 
         return diagonals;
-    }
-    
-    public ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> getNormalMoves(int x, int y, Piece player){
-    	//ArrayList<ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>> moves = new ArrayList<ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>>();
-    	ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> moves = new ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>();
-    	Pair<Pair<Integer,Integer>, Pair<Integer,Integer>> move;
-    	Pair<Integer, Integer> initCord = new Pair<>(x,y);
-//    	Board hypotheticalBoard = board;
-//    	ArrayList<Pair<Integer,Integer>> pieces = getAllPieceLocations(player);
-//    	for(int i = 0; i < pieces.size();i++){
-//    		ArrayList<Pair<Integer,Integer>> diagonals = getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY, player);
-//    		ArrayList<Pair<Integer,Integer>> jumps = getValidJumps(pieces.get(i).posX, pieces.get(i).posY,player, true);
-//    		if(jumps.size() != 0){
-//    			diagonals.addAll(jumps);
-//    		}
-//    		move = new Pair<>(pieces.get(i), diagonals.get(i));
-//    		moves.add(move);
-//    	}
-
-    	ArrayList<Pair<Integer,Integer>> diagonals = getValidDiagonals(x, y, player);
-    	//ArrayList<Pair<Integer,Integer>> jumps = getValidJumps(x, y, player, true);
-    	System.out.println(diagonals.size());
-    	//System.out.println(jumps.size());
-//    	if(jumps.size() > 0){
-//    		for(int j = 0; j < jumps.size(); j++){
-//    			move = new Pair<>(initCord, jumps.get(j));
-//    			moves.add(move);
-//    		}
-//    		
-//    	}else{
-    		for(int i = 0; i < diagonals.size(); i++){
-        		move = new Pair<>(initCord, diagonals.get(i));
-        		moves.add(move);
-        	}
-//    	}
-    	
-    	
-    	System.out.println(moves.size());
-    	for(int j = 0; j < moves.size(); j++){
-    		System.out.println(moves.get(j).toString());
-    	}
-    	return moves;
-    	
     }
 
     /**
@@ -378,6 +319,10 @@ public class Board {
 
     public char[][] getBoardState() {
         return boardState;
+    }
+
+    public int[][] getBoardValues() {
+        return boardValues;
     }
 
     public int getSize() {

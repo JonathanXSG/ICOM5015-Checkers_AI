@@ -130,7 +130,10 @@ public class Node {
 //    }
 
 	public void print(String prefix, boolean isTail) {
-		System.out.println(prefix + (isTail ? "└── " : "├── ") + actionTaken + " V= "+value + " A= "+nodeAlpha + " B= "+nodeBeta);
+		String a = childrenNum()==0? "" : " A= "+nodeAlpha;
+		String b = childrenNum()==0? "" : " B= "+nodeBeta;
+
+		System.out.println(prefix + (isTail ? "└── " : "├── ") + actionTaken + " V= "+value + a + b);
 		for (int i = 0; i < childrenNodes.size() - 1; i++) {
 			childrenNodes.get(i).print(prefix + (isTail ? "    " : "│   "), false);
 		}
