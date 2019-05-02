@@ -15,7 +15,7 @@ public class Node {
 	private Board board;
 	private int value;
 	private Node parentNode;
-	private String actionTaken;
+	private Pair<Integer,Integer>[] actionTaken;
 	private ArrayList<Node> childrenNodes;
 //	private Pair<Integer,Integer> coordinatesMove;
 	
@@ -24,14 +24,14 @@ public class Node {
 	 * @param currentBoard State of the board at the current time
 	 * @param parent Parent of the current Node (null if it is the first node)
 	 */
-	public Node(Node parent, int nodeValue, Board currentBoard, String action, int alpha, int beta) {
+	public Node(Node parent, int nodeValue, Board currentBoard, Pair<Integer,Integer>[] action, int alpha, int beta) {
 		board = currentBoard;
 		value = nodeValue;
 		parentNode = parent;
 		actionTaken = action;
 		childrenNodes = new ArrayList<>();
-		alpha = nodeAlpha;
-		beta = nodeBeta;
+		nodeAlpha = alpha;
+		nodeBeta = beta;
 //		coordinatesMove = coordinates;
 	}
 
@@ -46,7 +46,7 @@ public class Node {
 		return parentNode;
 	}
 	
-	public String getAction(){
+	public Pair<Integer,Integer>[] getAction(){
 		return actionTaken;
 	}
 
@@ -130,7 +130,11 @@ public class Node {
 //    }
 
 	public void print(String prefix, boolean isTail) {
-		System.out.println(prefix + (isTail ? "└── " : "├── ") + actionTaken + " V= "+value + " A= "+nodeAlpha + " B= "+nodeBeta);
+		String a = childrenNum()==0? "" : " A= "+nodeAlpha;
+		String b = childrenNum()==0? "" : " B= "+nodeBeta;
+		String action = actionTaken==null? "Root" : actionTaken[0].toString() + "=>" + actionTaken[1].toString();
+
+		System.out.println(prefix + (isTail ? "└── " : "├── ") + action + " V= "+value + a + b);
 		for (int i = 0; i < childrenNodes.size() - 1; i++) {
 			childrenNodes.get(i).print(prefix + (isTail ? "    " : "│   "), false);
 		}
