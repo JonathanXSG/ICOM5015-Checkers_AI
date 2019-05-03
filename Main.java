@@ -49,6 +49,22 @@ public class Main {
 //                {' ','b',' ',' ',' ','b',' ','r'},
 //                {'b',' ',' ',' ',' ',' ','b',' '},
 //        };
+
+        AIvsAI(initial);
+//        AIvsPlayer();
+
+    }
+
+    private static void printArray(int[][] array){
+        for(int y = 0; y<array.length; y++){
+            for (int[] anArray : array) {
+                System.out.printf("%3d ", anArray[y]);
+            }
+            System.out.println();
+        }
+    }
+
+    private static void AIvsAI(char[][] initial){
         initialBoard = new Board(initial);
         long time1 = System.nanoTime();
         initialBoard.printBoard();
@@ -107,29 +123,11 @@ public class Main {
         if(initialBoard.hasPlayerLost(Piece.Red))
             System.out.println("BLACK PLAYER WON");
         initialBoard.printBoard();
-
-//        root.print("",false);
         System.out.println("Time: "+ (time2-time1));
-//        System.out.println(bestMove.getAction());
-
-//        System.out.println(bestMove.getValue());
-//        printArray(bestMove.getState().calcValues(Piece.Black));
-//        evaluationFunction.evaluate(bestMove.getState(), Piece.Black, true);
-//        System.out.println(bestMove.getState().evaluationFunction(Piece.Black));
-
-    }
-
-    private static void printArray(int[][] array){
-        for(int y = 0; y<array.length; y++){
-            for (int[] anArray : array) {
-                System.out.printf("%3d ", anArray[y]);
-            }
-            System.out.println();
-        }
     }
     
     private static void AIvsPlayer(){
-        	Scanner input = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
     	boolean valid1 = false;
     	boolean valid2 = false;
     	boolean validMove = false;
@@ -143,7 +141,8 @@ public class Main {
     	while(!valid1){
     		System.out.print("Select which one of your pieces you want to move (ej.: 1,2): ");
         	initialCord  = input.next();
-        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) && initialCord.length() == 3 && initialCord.charAt(1) == ',' ){
+        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) &&
+                    initialCord.length() == 3 && initialCord.charAt(1) == ',' ){
         		x1 =  Character.getNumericValue(initialCord.charAt(0));
         		y1 =  Character.getNumericValue(initialCord.charAt(2));
         		valid1 = true;
@@ -155,7 +154,8 @@ public class Main {
     	while(!valid2){
     		System.out.print("Select where do you want to move: (ej.: 1,2): ");
         	finalCord  = input.next();
-        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) && finalCord.length() == 3 && finalCord.charAt(1) == ','){
+        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) &&
+                    finalCord.length() == 3 && finalCord.charAt(1) == ','){
         		x2 =  Character.getNumericValue(finalCord.charAt(0));
         		y2 =  Character.getNumericValue(finalCord.charAt(2));
         		valid2 = true;
@@ -168,7 +168,7 @@ public class Main {
     	Pair<Integer,Integer> firstCord = new Pair<Integer,Integer>(x1,y1);
     	Pair<Integer,Integer> secondCord = new Pair<Integer,Integer>(x2,y2);
     	input.close();
-    	if(validMove = test.makeMove(Piece.Red, firstCord, secondCord)){
+    	if(initialBoard.makeMove(Piece.Red, firstCord, secondCord)){
     		System.out.println("Succesfully moved the piece");
     	}else{
     		System.out.println("Error moving the piece");

@@ -50,36 +50,18 @@ public class Main2 {
 //        System.out.println(test.makeMove(Piece.Red, new Pair<>(2,5), new Pair<>(0,3)));
 //        test.printBoard();
 
-        Node root = new Node(null, -1000, test, "Root",0,0);
-        createTree1(0, Piece.Black, root);
-        Node bestMove = abPruning(root, -1000, 1000, true);
+//        Node root = new Node(null, -1000, test, new ArrayList<>(),0,0);
+//        createTree1(0, Piece.Black, root);
+//        Node bestMove = abPruning(root, -1000, 1000, true);
+//
+//        System.out.println(leaves.size());
+//        long time2 = System.nanoTime();
+//        root.print("",false);
+//        System.out.println("Time: "+ (time2-time1));
+//        bestMove.getState().printBoard();
+//        System.out.println(bestMove.getAction());
 
-        System.out.println(leaves.size());
-        long time2 = System.nanoTime();
-        root.print("",false);
-        System.out.println("Time: "+ (time2-time1));
-        bestMove.getState().printBoard();
-        System.out.println(bestMove.getAction());
 
-//        for(int j = 0; j < tree.size(); j++){
-//        	tree.get(j).getState().printBoard();
-//        }
-//        ArrayList<Pair<Integer,Integer>> pieces =  test.getAllPieceLocations(Piece.Black);
-//        System.out.println("All moves from Black player");
-//        for(int i = 0; i < pieces.size(); i++){
-//
-//            test.getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY, Piece.Black).forEach((p) ->
-//                    tempMoves.add(new ArrayList<Pair<Integer, Integer>>(){{{add(p);}}}));
-//
-//            getChainMoves(pieces.get(i).posX, pieces.get(i).posY, Piece.Black,
-//                    test.isPieceKing(pieces.get(i).posX, pieces.get(i).posY), sequence);
-//        }
-//        System.out.println(tempMoves.size());
-//
-//        for(int i = 0; i < tempMoves.size(); i++){
-//        	System.out.println(tempMoves.get(i).toString());
-//        }
-        //test.getChainMoves(3, 2, Piece.Black, test, test.getValidJumps(3, 2, Piece.Black, true), test.getValidJumps(3, 2, Piece.Black, true).size(), moves, sequence);
     }
 
     static void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence, Board currentBoard){
@@ -112,7 +94,7 @@ public class Main2 {
     	int Min = -1000;
     	int Max = 1000;
     	if(depth == 3){
-    		root.setValue(root.getState().evaluationFunction(player));
+//    		root.setValue(root.getState().evaluationFunction(player));
     		leaves.add(root);
     		return;
     	}else{
@@ -146,9 +128,9 @@ public class Main2 {
                             hypotheticalBoard1.makeMove(player, piece, aTempMove);
                         }
                         String action = piece.toString() + " => " + tempMove.get(tempMove.size() - 1).toString();
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1, action,0,0);
+//                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard1, action,0,0);
 
-                        root.addChild(child);
+//                        root.addChild(child);
                     }
                     tempMoves = new ArrayList<>();
                 }
@@ -165,9 +147,9 @@ public class Main2 {
                         hypotheticalBoard2.makeMove(player, piece, move);
                         String action = piece.toString() + " => " + move.toString();
 
-                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action,0,0);
+//                        child = new Node(root, (player == Piece.Black) ? Max : Min, hypotheticalBoard2, action,0,0);
 
-                        root.addChild(child);
+//                        root.addChild(child);
                     }
                 }
     		}
