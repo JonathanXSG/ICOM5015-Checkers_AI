@@ -3,46 +3,44 @@ import java.util.ArrayList;
 public class Board {
 
     private char[][] boardState;
-    private int[][] boardValues;
+    private static int[][] boardValues;
     private int size;
-    private static final int PIECE_VALUE = 2;
-    private static final int KING_VALUE = 5;
-    private static final int CAPTURE_VALUE = 10;
 
 	public Board(int size) {
 		boardState = new char[size][size];
-        boardValues = new int[size][size];
         for(int y=0; y<size; y++){
             for(int x=0; x<size; x++){
                 boardState[x][y] = ' ';
             }
         }
         this.size = size;
-        setBoardValues();
+        if(boardValues == null){
+            boardValues = new int[size][size];
+            setBoardValues();
+        }
         setPieces();
 	}
 
     public Board(char[][] initialState) {
     	boardState = new char[initialState.length][initialState.length];
-    	for(int y=0; y<initialState.length; y++){
+        this.size = initialState.length;
+        for(int y=0; y<initialState.length; y++){
             for(int x=0; x<initialState.length; x++){
                 boardState[x][y] = initialState[x][y];
             }
         }
-        //boardState = initialState;
-        boardValues = new int[initialState.length][initialState.length];
-        this.size = initialState.length;
-        setBoardValues();
+        if(boardValues == null){
+            boardValues = new int[size][size];
+            setBoardValues();
+        }
     }
 
     public Board(Board board) {
         this.size = board.boardState.length;
         boardState = new char[size][size];
-        boardValues = new int[size][size];
         for(int y=0; y<size; y++){
             for(int x=0; x<size; x++){
                 boardState[x][y] = board.boardState[x][y];
-                boardValues[x][y] = board.boardValues[x][y];
             }
         }
     }
@@ -66,7 +64,8 @@ public class Board {
             minRow++;
             maxCol--;
             maxRow--;
-			value--;
+			value-=2;
+			value = value<0? 0 : value;
 		}
     }
 
@@ -91,7 +90,6 @@ public class Board {
         }
 	}
 
-	//TODO: Implement checking if a move is valid in terms of diagonal move or jumping over piece
     public boolean makeMove(Piece player, Pair<Integer,Integer> initialCord, Pair<Integer,Integer> finalCord){
 	    boolean king = isPieceKing(initialCord.posX, initialCord.posY);
         if(isInvalidCord(initialCord) || isInvalidCord(finalCord))
@@ -100,28 +98,32 @@ public class Board {
 	        return false;
         else if(board(finalCord) != ' ')
             return false;
-        else if(!getValidDiagonals(initialCord.posX, initialCord.posY, player).contains(finalCord) && !getValidJumps(initialCord.posX, initialCord.posY, player, king,true).contains(finalCord)) {
+        else if(!getValidDiagonals(initialCord.posX, initialCord.posY, player).contains(finalCord) && !getValidJumps(initialCord.posX, initialCord.posY, player, king,true).contains(finalCord))
             return false;
-        }
-        else if(!king && player == Piece.Black && finalCord.posY < initialCord.posY){
+        else if(getValidDiagonals(initialCord.posX, initialCord.posY, player).contains(finalCord) && jumpsAvailable(player))
             return false;
-        }
-        else if(!king && player == Piece.Red && finalCord.posY > initialCord.posY){
-            return false;
-        }
         else{
             if(getValidJumps(initialCord.posX, initialCord.posY, player, king, true).contains(finalCord)){
                 //Jump over opponent
                 board(new Pair<>((finalCord.posX+initialCord.posX)/2,(finalCord.posY+initialCord.posY)/2), ' ');
             }
+            board(finalCord, board(initialCord));
             if(finalCord.posY == size-1 || finalCord.posY == 0)
-                board(finalCord, Character.toUpperCase(board(initialCord)));
-            else
-                board(finalCord, board(initialCord));
+                makeKing(finalCord.posX, finalCord.posY);
+                //board(finalCord, Character.toUpperCase(board(initialCord)));
             board(initialCord, ' ');
             return true;
         }
     }
+
+    public boolean jumpsAvailable(Piece player){
+	    for (Pair<Integer, Integer> piece: getAllPieceLocations(player)){
+	        if(!getValidJumps(piece.posX, piece.posY, player, isPieceKing(piece.posX, piece.posY), true).isEmpty())
+	            return true;
+        }
+	    return false;
+    }
+
 
     public int[][] calcValues(Piece player){
 	    int[][] values = new int[size][size];
@@ -131,38 +133,24 @@ public class Board {
                     values[x][y] = 0;
                 else
                     values[x][y] = ((Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R')) ? 1:-1)
-                            * boardValues[x][y] * (isPieceKing(x,y)? KING_VALUE: PIECE_VALUE) ;
+                            * (boardValues[x][y] + (isPieceKing(x,y)?
+                            CheckersValues.KING_VALUE: CheckersValues.PIECE_VALUE)) ;
                 }
 		}
 		return values;
     }
 
-    private int calcBoardValue(Piece player){
+    public int calcBoardValue(Piece player){
         int value = 0;
         for(int x = 0; x<size; x++){
             for(int y = 0; y < size; y++){
                 if(boardState[x][y] != ' ')
                     value += ((Character.toUpperCase(boardState[x][y]) == (player == Piece.Black? 'B' : 'R')) ? 1:-1)
-                            * boardValues[x][y] * (isPieceKing(x,y)? KING_VALUE: PIECE_VALUE) ;
+                            * (boardValues[x][y] * (isPieceKing(x,y)?
+                            CheckersValues.KING_VALUE: CheckersValues.PIECE_VALUE)) ;
             }
         }
         return value;
-    }
-
-    public int evaluationFunction(Piece player){
-        int values = calcBoardValue(player);
-        int offensiveJumps = 0;
-        int defensiveJumps = 0;
-        for(Pair<Integer,Integer> cord : getAllPieceLocations(player)){
-            offensiveJumps += getValidJumps(cord.posX, cord.posY, player,
-                    isPieceKing(cord.posX, cord.posY),true).size();
-            defensiveJumps += getValidJumps(cord.posX, cord.posY, player,
-                    isPieceKing(cord.posX, cord.posY),false).size();
-        }
-        offensiveJumps *= CAPTURE_VALUE;
-        defensiveJumps *= -CAPTURE_VALUE;
-
-        return values+offensiveJumps+defensiveJumps;
     }
 
     /**
@@ -211,7 +199,7 @@ public class Board {
     	            diagonals.add(new Pair<>(x+modifier, y+modifier));
     		 if(!isInvalidCord(x-modifier, y+modifier) && boardState[x-modifier][y+modifier] == ' ')
     	            diagonals.add(new Pair<>(x-modifier, y+modifier));
-    	}else if(boardState[x][y] != ' ' && (boardState[x][y] == (player == Piece.Black? 'b' : 'r'))){
+    	}else if(boardState[x][y] != ' ' && isPieceKing(x,y)){
     		if(!isInvalidCord(x+modifier, y+modifier)  && boardState[x+modifier][y+modifier] == ' ')
                 diagonals.add(new Pair<>(x+modifier, y+modifier));
             if(!isInvalidCord(x+modifier, y-modifier)  && boardState[x+modifier][y-modifier] == ' ')
@@ -223,49 +211,6 @@ public class Board {
     	}
 
         return diagonals;
-    }
-    
-    public ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> getNormalMoves(int x, int y, Piece player){
-    	//ArrayList<ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>> moves = new ArrayList<ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>>();
-    	ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>> moves = new ArrayList<Pair<Pair<Integer,Integer>, Pair<Integer,Integer>>>();
-    	Pair<Pair<Integer,Integer>, Pair<Integer,Integer>> move;
-    	Pair<Integer, Integer> initCord = new Pair<>(x,y);
-//    	Board hypotheticalBoard = board;
-//    	ArrayList<Pair<Integer,Integer>> pieces = getAllPieceLocations(player);
-//    	for(int i = 0; i < pieces.size();i++){
-//    		ArrayList<Pair<Integer,Integer>> diagonals = getValidDiagonals(pieces.get(i).posX, pieces.get(i).posY, player);
-//    		ArrayList<Pair<Integer,Integer>> jumps = getValidJumps(pieces.get(i).posX, pieces.get(i).posY,player, true);
-//    		if(jumps.size() != 0){
-//    			diagonals.addAll(jumps);
-//    		}
-//    		move = new Pair<>(pieces.get(i), diagonals.get(i));
-//    		moves.add(move);
-//    	}
-
-    	ArrayList<Pair<Integer,Integer>> diagonals = getValidDiagonals(x, y, player);
-    	//ArrayList<Pair<Integer,Integer>> jumps = getValidJumps(x, y, player, true);
-    	System.out.println(diagonals.size());
-    	//System.out.println(jumps.size());
-//    	if(jumps.size() > 0){
-//    		for(int j = 0; j < jumps.size(); j++){
-//    			move = new Pair<>(initCord, jumps.get(j));
-//    			moves.add(move);
-//    		}
-//    		
-//    	}else{
-    		for(int i = 0; i < diagonals.size(); i++){
-        		move = new Pair<>(initCord, diagonals.get(i));
-        		moves.add(move);
-        	}
-//    	}
-    	
-    	
-    	System.out.println(moves.size());
-    	for(int j = 0; j < moves.size(); j++){
-    		System.out.println(moves.get(j).toString());
-    	}
-    	return moves;
-    	
     }
 
     /**
@@ -380,6 +325,10 @@ public class Board {
         return boardState;
     }
 
+    public int[][] getBoardValues() {
+        return boardValues;
+    }
+
     public int getSize() {
         return size;
     }
@@ -390,10 +339,10 @@ public class Board {
             for(int x=0; x<size; x++){
                 StringBuilder buffer = new StringBuilder();
                 if(boardState[x][y] == 'B' || boardState[x][y] == 'b')
-                    buffer.append(ConsoleColors.RESET).append(ConsoleColors.PURPLE + " ")
+                    buffer.append(ConsoleColors.RESET).append(ConsoleColors.PURPLE_BOLD + " ")
                             .append(boardState[x][y]).append(" ");
                 else if(boardState[x][y] == 'R' || boardState[x][y] == 'r')
-                    buffer.append(ConsoleColors.RESET).append(ConsoleColors.RED + " ")
+                    buffer.append(ConsoleColors.RESET).append(ConsoleColors.RED_BOLD + " ")
                             .append(boardState[x][y]).append(" ");
                 else if((x+y)%2 != 0)
                     buffer.append(ConsoleColors.RESET).append(ConsoleColors.WHITE).append("   ");
@@ -404,6 +353,26 @@ public class Board {
             }
             System.out.println();
             if(y==7) System.out.println(ConsoleColors.YELLOW_BOLD+"   0  1  2  3  4  5  6  7"+ConsoleColors.RESET);
+        }
+    }
+
+    /**
+     * Method to check if a given player has lost the game
+     * @param player Player to evaluate if it has any remaining pieces or moves
+     * @return True if the player has lost or false if the player has remaining pieces or moves
+     */
+    public boolean hasPlayerLost(Piece player) {
+        ArrayList<Pair<Integer, Integer>> playerPieces = getAllPieceLocations(player);
+        if(playerPieces.isEmpty()){
+            return true;
+        }
+        else{
+            for (Pair<Integer, Integer> piece: playerPieces){
+                if (!getValidDiagonals(piece.posX, piece.posY, player).isEmpty() || !getValidJumps(piece.posX, piece.posY , player, isPieceKing(piece.posX, piece.posY), true).isEmpty()){
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
