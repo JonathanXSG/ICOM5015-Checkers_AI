@@ -56,8 +56,8 @@ public class Main {
         Node root = new Node(null, -1000, initialBoard, null,0,0);
         EvaluationFunction evaluationFunction = new MediumEvaluation();
         EvaluationFunction evaluationFunction2 = new MediumEvaluation();
-        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,7, evaluationFunction);
-        AIPlayer aiPlayer2 =  new AIPlayer(Piece.Red,7, evaluationFunction2);
+        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,3, evaluationFunction);
+        AIPlayer aiPlayer2 =  new AIPlayer(Piece.Red,3, evaluationFunction2);
         Node bestMove;
         int round = 0;
         boolean pass=true;
@@ -128,50 +128,86 @@ public class Main {
         }
     }
     
-    private static void AIvsPlayer(){
-        	Scanner input = new Scanner(System.in);
+    private static void AIvsPlayer(Node node){
+    	Scanner input = new Scanner(System.in);
+    	EvaluationFunction evaluationFunction = new MediumEvaluation();
+    	AIPlayer aiPlayer =  new AIPlayer(Piece.Black,3, evaluationFunction);
     	boolean valid1 = false;
     	boolean valid2 = false;
     	boolean validMove = false;
+    	boolean keepPlaying = false;
     	String initialCord = null;
     	String finalCord = null;
+    	Node bestMove;
+    	int round = 0;
+    	boolean pass=true;
+    	Piece player = Piece.Red;
     	int x1 = 0;
     	int y1 = 0;
     	int x2 = 0;
     	int y2 = 0;
-    	
-    	while(!valid1){
-    		System.out.print("Select which one of your pieces you want to move (ej.: 1,2): ");
-        	initialCord  = input.next();
-        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) && initialCord.length() == 3 && initialCord.charAt(1) == ',' ){
-        		x1 =  Character.getNumericValue(initialCord.charAt(0));
-        		y1 =  Character.getNumericValue(initialCord.charAt(2));
-        		valid1 = true;
-        	}else{
-        		System.out.println("Please enter valid information");
-        	}
+    	while (!initialBoard.hasPlayerLost(Piece.Black) && !initialBoard.hasPlayerLost(Piece.Red)){
+    		while(player == Piece.Red ){
+    			while(!valid1){
+            		System.out.print("Select which one of your pieces you want to move (ej.: 1,2): ");
+                	initialCord  = input.next();
+                	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) && initialCord.length() == 3 && initialCord.charAt(1) == ',' ){
+                		x1 =  Character.getNumericValue(initialCord.charAt(0));
+                		y1 =  Character.getNumericValue(initialCord.charAt(2));
+                		valid1 = true;
+                	}else{
+                		System.out.println("Please enter valid information");
+                	}
+            	}
+            	
+            	while(!valid2){
+            		System.out.print("Select where do you want to move: (ej.: 1,2): ");
+                	finalCord  = input.next();
+                	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) && finalCord.length() == 3 && finalCord.charAt(1) == ','){
+                		x2 =  Character.getNumericValue(finalCord.charAt(0));
+                		y2 =  Character.getNumericValue(finalCord.charAt(2));
+                		valid2 = true;
+                	}else{
+                		System.out.println("Please enter valid information");
+                	}
+            	}
+            	
+            	System.out.println("Move from: " + initialCord + " to " + finalCord);
+            	Pair<Integer,Integer> firstCord = new Pair<Integer,Integer>(x1,y1);
+            	Pair<Integer,Integer> secondCord = new Pair<Integer,Integer>(x2,y2);
+            	if(validMove = initialBoard.makeMove(Piece.Red, firstCord, secondCord)){
+            		System.out.println("Succesfully moved the piece");
+            	}else{
+            		System.out.println("Error moving the piece");
+            	}
+            	if(keepPlaying = initialBoard.jumpsAvailable(player)){
+            		continue;
+            	}else{
+            		player = Piece.Black;
+            	}
+    		}
+    		aiPlayer.calculateMove(node);
+            bestMove = aiPlayer.getNextMove();
+           System.out.println("BLACK "+round);
+            for(int index=0; index < bestMove.getAction().size()-1; index++){
+                pass=initialBoard.makeMove(Piece.Black, bestMove.getAction().get(index), bestMove.getAction().get(index+1));
+            }
+            if (!pass){
+                initialBoard.printBoard();
+                for(int index=0; index < bestMove.getAction().size()-1; index++){
+                    System.out.println(bestMove.getAction().get(index) + " => " + bestMove.getAction().get(index+1));
+                }
+                System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by Black on round "+round+ConsoleColors.RESET);
+            }
+            node = new Node(null, -1000, initialBoard, null,0,0);
+
+            if(initialBoard.hasPlayerLost(Piece.Red))
+                break;
+            
+            round++;
+            player = Piece.Red;
     	}
-    	
-    	while(!valid2){
-    		System.out.print("Select where do you want to move: (ej.: 1,2): ");
-        	finalCord  = input.next();
-        	if(Character.isDigit(initialCord.charAt(0)) && Character.isDigit(initialCord.charAt(2)) && finalCord.length() == 3 && finalCord.charAt(1) == ','){
-        		x2 =  Character.getNumericValue(finalCord.charAt(0));
-        		y2 =  Character.getNumericValue(finalCord.charAt(2));
-        		valid2 = true;
-        	}else{
-        		System.out.println("Please enter valid information");
-        	}
-    	}
-    	
-    	System.out.println("Move from: " + initialCord + " to " + finalCord);
-    	Pair<Integer,Integer> firstCord = new Pair<Integer,Integer>(x1,y1);
-    	Pair<Integer,Integer> secondCord = new Pair<Integer,Integer>(x2,y2);
     	input.close();
-    	if(validMove = test.makeMove(Piece.Red, firstCord, secondCord)){
-    		System.out.println("Succesfully moved the piece");
-    	}else{
-    		System.out.println("Error moving the piece");
-    	}
     }
+    	
 }
