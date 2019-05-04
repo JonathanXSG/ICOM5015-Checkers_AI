@@ -148,6 +148,7 @@ public class Main {
     	int y2 = 0;
     	while (!initialBoard.hasPlayerLost(Piece.Black) && !initialBoard.hasPlayerLost(Piece.Red)){
     		while(player == Piece.Red ){
+    			System.out.println("Your Turn");
     			while(!valid1){
             		System.out.print("Select which one of your pieces you want to move (ej.: 1,2): ");
                 	initialCord  = input.next();
@@ -180,12 +181,17 @@ public class Main {
             	}else{
             		System.out.println("Error moving the piece");
             	}
-            	if(keepPlaying = initialBoard.jumpsAvailable(player)){
+            	if(initialBoard.getValidDiagonals(x2, y2, player).size() > 0){
+            		keepPlaying = true;
             		continue;
             	}else{
+            		keepPlaying = false;
             		player = Piece.Black;
             	}
     		}
+    		 if(initialBoard.hasPlayerLost(Piece.Black))
+                 break;
+    		System.out.println("AI's Turn");
     		aiPlayer.calculateMove(node);
             bestMove = aiPlayer.getNextMove();
            System.out.println("BLACK "+round);
