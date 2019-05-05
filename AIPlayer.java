@@ -110,7 +110,6 @@ public class AIPlayer {
     }
 
     Node abPruning(Node root, int alpha, int beta, int depth, boolean maxPlayer){
-        Node bestNode = root;
         if(root.childrenNum()==0){
             root.setValue(evaluator.evaluate(root.getState(), maxPlayer? Piece.Red : Piece.Black, false));
 //            root.setValue(root.getState().evaluationFunction(maxPlayer? Piece.Red : Piece.Black));
@@ -118,8 +117,10 @@ public class AIPlayer {
         }else{
         	ArrayList<Integer> indexes = new ArrayList<>();
             if(maxPlayer){
+            	Node bestNode = root;
                 //Node bestNode = root;
                 for(int i = root.childrenNum()-1; i >= 0; i--){
+                	
                 	int randomIndex = generator.nextInt(root.childrenNum());
                 	while(indexes.contains(randomIndex)){
                 		randomIndex = generator.nextInt(root.childrenNum());
@@ -145,6 +146,7 @@ public class AIPlayer {
                 }
                 return bestNode;
             }else{
+            	Node bestNode = root;
                 for(int i = root.childrenNum()-1; i >= 0; i--){
                 	int randomIndex = generator.nextInt(root.childrenNum());
                 	while(indexes.contains(randomIndex)){
