@@ -152,6 +152,7 @@ public class Main {
     	while (!initialBoard.hasPlayerLost(Piece.Black) && !initialBoard.hasPlayerLost(Piece.Red)){
     		while(player == Piece.Black){
     			System.out.println("Your Turn");
+    			initialBoard.printBoard();
     			while(!validMove){
     				while(!valid1){
                 		System.out.print("Select which one of your pieces you want to move (ej.: 1,2): ");
@@ -196,6 +197,9 @@ public class Main {
     			extraJumps = initialBoard.getValidJumps(x2, y2, player,initialBoard.isPieceKing(x2, y2), true).size();
             	if(extraJumps > 0){
 //            		keepPlaying = true;
+            		valid1 = false;
+            		valid2 = false;
+            		validMove = false;
             		continue;
             	}else{
 //            		keepPlaying = false;
@@ -209,6 +213,7 @@ public class Main {
     			}
     			
     		System.out.println("AI's Turn");
+    		initialBoard.printBoard();
     		aiPlayer.calculateMove(node);
             bestMove = aiPlayer.getNextMove();
             for(int j=0; j < bestMove.getAction().size()-1; j++){
