@@ -54,7 +54,7 @@ public class Main {
         long time1 = System.nanoTime();
         initialBoard.printBoard();
 
-        Node root = new Node(null, -1000, initialBoard, null,-1000,1000);
+        Node root = new Node(null, 1000, initialBoard, null,-1000,1000);
         EvaluationFunction evaluationFunction = new MediumEvaluation();
         EvaluationFunction evaluationFunction2 = new MediumEvaluation();
         AIPlayer aiPlayer =  new AIPlayer(Piece.Black,5, evaluationFunction);
