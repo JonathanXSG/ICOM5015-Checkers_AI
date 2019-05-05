@@ -62,51 +62,51 @@ public class Main {
         Node bestMove;
         int round = 0;
         boolean pass=true;
-//        AIvsPlayer(root);
+        AIvsPlayer(root);
 
-        while (!initialBoard.hasPlayerLost(Piece.Black) && !initialBoard.hasPlayerLost(Piece.Red)){
-            // Black turn
-            aiPlayer.calculateMove(root);
-            bestMove = aiPlayer.getNextMove();
-            System.out.println("BLACK "+round);
-            for(int index=0; index < bestMove.getAction().size()-1; index++){
-                pass=initialBoard.makeMove(Piece.Black, bestMove.getAction().get(index), bestMove.getAction().get(index+1));
-            }
-            if (!pass){
-                initialBoard.printBoard();
-                for(int index=0; index < bestMove.getAction().size()-1; index++){
-                    System.out.println(bestMove.getAction().get(index) + " => " + bestMove.getAction().get(index+1));
-                }
-                System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by Black on round "+round+ConsoleColors.RESET);
-            }
-            root = new Node(null, 1000, initialBoard, null,-1000,1000);
-            printArray1(initialBoard.getBoardState());
-
-            if(initialBoard.hasPlayerLost(Piece.Red))
-                break;
-
-            //Red turn
-            aiPlayer2.calculateMove(root);
-            bestMove = aiPlayer2.getNextMove();
-            System.out.println("RED " + round);
-            for(int index=0; index < bestMove.getAction().size()-1; index++){
-                pass=initialBoard.makeMove(Piece.Red, bestMove.getAction().get(index), bestMove.getAction().get(index+1));
-            }
-            if (!pass){
-                initialBoard.printBoard();
-                for(int index=0; index < bestMove.getAction().size()-1; index++){
-                    System.out.println(bestMove.getAction().get(index) + " => " + bestMove.getAction().get(index+1));
-                }
-                System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by RED on round "+round+ConsoleColors.RESET);
-            }
-            root = new Node(null, -1000, initialBoard, null,0,0);
-            printArray1(initialBoard.getBoardState());
-            if(initialBoard.hasPlayerLost(Piece.Black))
-                break;
-
-
-            round++;
-        }
+//        while (!initialBoard.hasPlayerLost(Piece.Black) && !initialBoard.hasPlayerLost(Piece.Red)){
+//            // Black turn
+//            aiPlayer.calculateMove(root);
+//            bestMove = aiPlayer.getNextMove();
+//            System.out.println("BLACK "+round);
+//            for(int index=0; index < bestMove.getAction().size()-1; index++){
+//                pass=initialBoard.makeMove(Piece.Black, bestMove.getAction().get(index), bestMove.getAction().get(index+1));
+//            }
+//            if (!pass){
+//                initialBoard.printBoard();
+//                for(int index=0; index < bestMove.getAction().size()-1; index++){
+//                    System.out.println(bestMove.getAction().get(index) + " => " + bestMove.getAction().get(index+1));
+//                }
+//                System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by Black on round "+round+ConsoleColors.RESET);
+//            }
+//            root = new Node(null, 1000, initialBoard, null,-1000,1000);
+//            printArray1(initialBoard.getBoardState());
+//
+//            if(initialBoard.hasPlayerLost(Piece.Red))
+//                break;
+//
+//            //Red turn
+//            aiPlayer2.calculateMove(root);
+//            bestMove = aiPlayer2.getNextMove();
+//            System.out.println("RED " + round);
+//            for(int index=0; index < bestMove.getAction().size()-1; index++){
+//                pass=initialBoard.makeMove(Piece.Red, bestMove.getAction().get(index), bestMove.getAction().get(index+1));
+//            }
+//            if (!pass){
+//                initialBoard.printBoard();
+//                for(int index=0; index < bestMove.getAction().size()-1; index++){
+//                    System.out.println(bestMove.getAction().get(index) + " => " + bestMove.getAction().get(index+1));
+//                }
+//                System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by RED on round "+round+ConsoleColors.RESET);
+//            }
+//            root = new Node(null, -1000, initialBoard, null,0,0);
+//            printArray1(initialBoard.getBoardState());
+//            if(initialBoard.hasPlayerLost(Piece.Black))
+//                break;
+//
+//
+//            round++;
+//        }
         long time2 = System.nanoTime();
 
         if(initialBoard.hasPlayerLost(Piece.Black))
@@ -147,7 +147,7 @@ public class Main {
     private static void AIvsPlayer(Node node){
     	Scanner input = new Scanner(System.in);
     	EvaluationFunction evaluationFunction = new MediumEvaluation();
-    	AIPlayer aiPlayer =  new AIPlayer(Piece.Red,3, evaluationFunction);
+    	AIPlayer aiPlayer =  new AIPlayer(Piece.Red,4, evaluationFunction);
     	int extraJumps = 0;
     	boolean valid1 = false;
     	boolean valid2 = false;
@@ -251,7 +251,7 @@ public class Main {
                 }
                 System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by Black on round "+round+ConsoleColors.RESET);
             }
-            node = new Node(null, -1000, initialBoard, null,0,0);
+            node = new Node(null, 1000, initialBoard, null,0,0);
 
             if(initialBoard.hasPlayerLost(Piece.Black))
                 break;
