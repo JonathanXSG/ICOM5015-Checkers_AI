@@ -64,7 +64,7 @@ public class Board {
             minRow++;
             maxCol--;
             maxRow--;
-			value-=2;
+			value-=1;
 			value = value<0? 0 : value;
 		}
     }
@@ -110,7 +110,6 @@ public class Board {
             board(finalCord, board(initialCord));
             if(finalCord.posY == size-1 || finalCord.posY == 0)
                 makeKing(finalCord.posX, finalCord.posY);
-                //board(finalCord, Character.toUpperCase(board(initialCord)));
             board(initialCord, ' ');
             return true;
         }

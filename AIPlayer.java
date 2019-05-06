@@ -95,6 +95,8 @@ public class AIPlayer {
             }
     }
 
+    // Recursively find all the chain moves that a player can make
+    //Eachof these chain moves wil be an array of coordinates for the jumps.
     void getChainMoves(int x, int y, Piece player,boolean king, ArrayList<Pair<Integer,Integer>> sequence, Board currentBoard){
         ArrayList<Pair<Integer,Integer>> extraJumps = currentBoard.getValidJumps(x,y, player, king, true);
         if(extraJumps.size() == 0){
@@ -112,9 +114,9 @@ public class AIPlayer {
     }
 
     Node abPruning(Node root, int alpha, int beta, int depth, boolean maxPlayer){
+        // If we are at a leaf, then do the evaluation function to give a value tot ge board state
         if(root.childrenNum()==0){
             root.setValue(evaluator.evaluate(root.getState(), maxPlayer? Piece.Red : Piece.Black, false));
-//            root.setValue(root.getState().evaluationFunction(maxPlayer? Piece.Red : Piece.Black));
             return root;
         }else{
         	ArrayList<Integer> indexes = new ArrayList<>();
@@ -128,20 +130,15 @@ public class AIPlayer {
                 	int randomIndex = generator.nextInt(root.childrenNum());
                 	while(indexes.contains(randomIndex)){
                 		randomIndex = generator.nextInt(root.childrenNum());
-                		//System.out.println("Infinite Loop Max Player");
                 	}
                     Node valNode = abPruning(root.child(randomIndex), alpha, beta, depth+1, false);
                     indexes.add(randomIndex);
                     bestValue = Math.max(bestValue, valNode.getValue());
 
-//                    if(bestValue == valNode.getValue() && bestNode.getValue() != valNode.getValue()){
-//                        bestNode = valNode;
-//                    }
                     if(bestValue == valNode.getValue() && node.getValue() != valNode.getValue()){
                         node.setValue(bestValue);
                     }
                     if ((bestValue > alpha) && depth == 0) {
-                        //only update best score if alpha was better
                         nextMove = root.child(randomIndex);
                         node = root.child(randomIndex);
                     }
@@ -152,29 +149,22 @@ public class AIPlayer {
                         break;
                     }
                 }
-//                return bestNode;
                 return node;
             }else{
             	int bestValue = MAX;
-//            	Node bestNode = root;
             	Node node = root;
                 for(int i = root.childrenNum()-1; i >= 0; i--){
                 	int randomIndex = generator.nextInt(root.childrenNum());
                 	while(indexes.contains(randomIndex)){
                 		randomIndex = generator.nextInt(root.childrenNum());
-//                		System.out.println("Infinite Loop Min Player");
                 	}
                     Node valNode = abPruning(root.child(randomIndex), alpha, beta, depth+1, true);
                     indexes.add(randomIndex);
                     bestValue = Math.min(bestValue, valNode.getValue());
-//                    if(bestValue == valNode.getValue() && bestNode.getValue() != valNode.getValue()){
-//                        bestNode = valNode;
-//                    }
                     if(bestValue == valNode.getValue() && node.getValue() != valNode.getValue()){
                         node.setValue(bestValue);
                     }
                     if ((bestValue < beta) && depth == 0) {
-                        //only update best score if alpha was better
                         nextMove = root.child(randomIndex);
                         node = root.child(randomIndex);
                     }
@@ -185,7 +175,6 @@ public class AIPlayer {
                         break;
                     }
                 }
-//                return bestNode;
                 return node;
             }
         }

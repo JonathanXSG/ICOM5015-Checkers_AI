@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class Node {
 	
-//	private Board state;
 	private int nodeAlpha;
 	private int nodeBeta;
 	private Board board;
@@ -17,8 +16,7 @@ public class Node {
 	private Node parentNode;
 	private ArrayList<Pair<Integer,Integer>> actionTaken;
 	private ArrayList<Node> childrenNodes;
-//	private Pair<Integer,Integer> coordinatesMove;
-	
+
 	/**
 	 * Constructor for creating a Node object 
 	 * @param currentBoard State of the board at the current time
@@ -32,7 +30,6 @@ public class Node {
 		childrenNodes = new ArrayList<>();
 		nodeAlpha = alpha;
 		nodeBeta = beta;
-//		coordinatesMove = coordinates;
 	}
 
     public Node(Node oldNode) {
@@ -121,20 +118,6 @@ public class Node {
 	public ArrayList<Node> getChildren() {
 		return childrenNodes;
 	}
-
-	//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Node node = (Node) o;
-//        return Objects.equals(state, node.state);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//
-//        return Objects.hash(state);
-//    }
 
 	public void print(String prefix, boolean isTail) {
 		String a = childrenNum()==0? "" : " A= "+nodeAlpha;
