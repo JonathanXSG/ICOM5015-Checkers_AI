@@ -55,15 +55,15 @@ public class Main {
         initialBoard.printBoard();
 
         Node root = new Node(null, 1000, initialBoard, null,-1000,1000);
-        EvaluationFunction evaluationFunction = new MediumEvaluation();
-        EvaluationFunction evaluationFunction2 = new MediumEvaluation();
-        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,5, evaluationFunction);
-        AIPlayer aiPlayer2 =  new AIPlayer(Piece.Red,4, evaluationFunction2);
-        Node bestMove;
-        int round = 0;
-        boolean pass=true;
-        AIvsPlayer(root);
-
+//        EvaluationFunction evaluationFunction = new MediumEvaluation();
+//        EvaluationFunction evaluationFunction2 = new MediumEvaluation();
+//        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,5, evaluationFunction);
+//        AIPlayer aiPlayer2 =  new AIPlayer(Piece.Red,4, evaluationFunction2);
+//        Node bestMove;
+//        int round = 0;
+//        boolean pass=true;
+          AIvsPlayer(root);
+//
 //        while (!initialBoard.hasPlayerLost(Piece.Black) && !initialBoard.hasPlayerLost(Piece.Red)){
 //            // Black turn
 //            aiPlayer.calculateMove(root);

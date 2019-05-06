@@ -120,7 +120,8 @@ public class AIPlayer {
         	ArrayList<Integer> indexes = new ArrayList<>();
             if(maxPlayer){
             	int bestValue = MIN;
-            	Node bestNode = root;
+//            	Node bestNode = root;
+            	Node node = root;
                 //Node bestNode = root;
                 for(int i = root.childrenNum()-1; i >= 0; i--){
                 	
@@ -133,8 +134,11 @@ public class AIPlayer {
                     indexes.add(randomIndex);
                     bestValue = Math.max(bestValue, valNode.getValue());
 
-                    if(bestValue == valNode.getValue() && bestNode.getValue() != valNode.getValue()){
-                        bestNode = valNode;
+//                    if(bestValue == valNode.getValue() && bestNode.getValue() != valNode.getValue()){
+//                        bestNode = valNode;
+//                    }
+                    if(bestValue == valNode.getValue() && node.getValue() != valNode.getValue()){
+                        node.setValue(bestValue);
                     }
                     if ((bestValue > alpha) && depth == 0) {
                         //only update best score if alpha was better
@@ -147,10 +151,12 @@ public class AIPlayer {
                         break;
                     }
                 }
-                return bestNode;
+//                return bestNode;
+                return node;
             }else{
             	int bestValue = MAX;
-            	Node bestNode = root;
+//            	Node bestNode = root;
+            	Node node = root;
                 for(int i = root.childrenNum()-1; i >= 0; i--){
                 	int randomIndex = generator.nextInt(root.childrenNum());
                 	while(indexes.contains(randomIndex)){
@@ -160,8 +166,11 @@ public class AIPlayer {
                     Node valNode = abPruning(root.child(randomIndex), alpha, beta, depth+1, true);
                     indexes.add(randomIndex);
                     bestValue = Math.min(bestValue, valNode.getValue());
-                    if(bestValue == valNode.getValue() && bestNode.getValue() != valNode.getValue()){
-                        bestNode = valNode;
+//                    if(bestValue == valNode.getValue() && bestNode.getValue() != valNode.getValue()){
+//                        bestNode = valNode;
+//                    }
+                    if(bestValue == valNode.getValue() && node.getValue() != valNode.getValue()){
+                        node.setValue(bestValue);
                     }
                     if ((bestValue < beta) && depth == 0) {
                         //only update best score if alpha was better
@@ -174,7 +183,8 @@ public class AIPlayer {
                         break;
                     }
                 }
-                return bestNode;
+//                return bestNode;
+                return node;
             }
         }
     }
