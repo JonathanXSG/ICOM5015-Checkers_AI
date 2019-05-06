@@ -143,6 +143,7 @@ public class AIPlayer {
                     if ((bestValue > alpha) && depth == 0) {
                         //only update best score if alpha was better
                         nextMove = root.child(randomIndex);
+                        node = root.child(randomIndex);
                     }
                     alpha = Math.max(alpha, bestValue);
                     root.setBeta(beta);
@@ -175,6 +176,7 @@ public class AIPlayer {
                     if ((bestValue < beta) && depth == 0) {
                         //only update best score if alpha was better
                         nextMove = root.child(randomIndex);
+                        node = root.child(randomIndex);
                     }
                     beta = Math.min(beta, bestValue);
                     root.setBeta(beta);
