@@ -52,7 +52,7 @@ public class Main {
 //        };
 
         AIvsAI(initial);
-//        AIvsPlayer();
+        AIvsPlayer(initial);
 
     }
 
@@ -70,7 +70,7 @@ public class Main {
         long time1 = System.nanoTime();
         initialBoard.printBoard();
 
-        Node root = new Node(null, 1000, initialBoard, null,-1000,1000);
+        Node root = new Node(null, -1000, initialBoard, null,-1000,1000);
 //        EvaluationFunction evaluationFunction = new MediumEvaluation();
 //        EvaluationFunction evaluationFunction2 = new MediumEvaluation();
 //        AIPlayer aiPlayer =  new AIPlayer(Piece.Black,5, evaluationFunction);
@@ -78,7 +78,6 @@ public class Main {
 //        Node bestMove;
 //        int round = 0;
 //        boolean pass=true;
-          AIvsPlayer(root);
 //
 //        while (!initialBoard.hasPlayerLost(Piece.Black) && !initialBoard.hasPlayerLost(Piece.Red)){
 //            // Black turn
@@ -143,12 +142,13 @@ public class Main {
         }
     }
     
-    private static void AIvsPlayer(Node node){
+    private static void AIvsPlayer(char[][] initial){
+    	initialBoard = new Board(initial);
     	Scanner input = new Scanner(System.in);
     	EvaluationFunction evaluationFunction = new MediumEvaluation();
     	AIPlayer aiPlayer =  new AIPlayer(Piece.Red,4, evaluationFunction);
     	int extraJumps = 0;
-
+    	Node nodeAI = new Node(null, 1000, initialBoard, null,0,0);
     	boolean valid1 = false;
     	boolean valid2 = false;
     	boolean validMove = false;
@@ -235,7 +235,7 @@ public class Main {
     		System.out.println("AI's Turn");
 //    		initialBoard.printBoard();
     		printArray1(initialBoard.getBoardState());
-    		aiPlayer.calculateMove(node);
+    		aiPlayer.calculateMove(nodeAI);
             bestMove = aiPlayer.getNextMove();
             for(int j=0; j < bestMove.getAction().size()-1; j++){
                 System.out.println(bestMove.getAction().get(j) + " => " + bestMove.getAction().get(j+1));	
@@ -251,7 +251,7 @@ public class Main {
                 }
                 System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by Black on round "+round+ConsoleColors.RESET);
             }
-            node = new Node(null, 1000, initialBoard, null,0,0);
+            nodeAI = new Node(null, 1000, initialBoard, null,0,0);
 
             if(initialBoard.hasPlayerLost(Piece.Black))
                 break;
