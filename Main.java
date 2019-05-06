@@ -50,6 +50,22 @@ public class Main {
 //                {' ','b',' ',' ',' ','b',' ','r'},
 //                {'b',' ',' ',' ',' ',' ','b',' '},
 //        };
+
+        AIvsAI(initial);
+//        AIvsPlayer();
+
+    }
+
+    private static void printArray(int[][] array){
+        for(int y = 0; y<array.length; y++){
+            for (int[] anArray : array) {
+                System.out.printf("%3d ", anArray[y]);
+            }
+            System.out.println();
+        }
+    }
+
+    private static void AIvsAI(char[][] initial){
         initialBoard = new Board(initial);
         long time1 = System.nanoTime();
         initialBoard.printBoard();
@@ -114,27 +130,10 @@ public class Main {
         if(initialBoard.hasPlayerLost(Piece.Red))
             System.out.println("BLACK PLAYER WON");
         initialBoard.printBoard();
-
-//        root.print("",false);
         System.out.println("Time: "+ (time2-time1));
-//        System.out.println(bestMove.getAction());
-
-//        System.out.println(bestMove.getValue());
-//        printArray(bestMove.getState().calcValues(Piece.Black));
-//        evaluationFunction.evaluate(bestMove.getState(), Piece.Black, true);
-//        System.out.println(bestMove.getState().evaluationFunction(Piece.Black));
-
-    }
-
-    private static void printArray(int[][] array){
-        for(int y = 0; y<array.length; y++){
-            for (int[] anArray : array) {
-                System.out.printf("%3d ", anArray[y]);
-            }
-            System.out.println();
-        }
     }
     
+
     private static void printArray1(char[][] array){
         for(int y = 0; y<array.length; y++){
             for (char[] anArray : array) {
@@ -149,6 +148,7 @@ public class Main {
     	EvaluationFunction evaluationFunction = new MediumEvaluation();
     	AIPlayer aiPlayer =  new AIPlayer(Piece.Red,4, evaluationFunction);
     	int extraJumps = 0;
+
     	boolean valid1 = false;
     	boolean valid2 = false;
     	boolean validMove = false;
@@ -258,8 +258,10 @@ public class Main {
             
             round++;
             player = Piece.Black;
+
     	}
     	input.close();
+
     }
     	
 }
