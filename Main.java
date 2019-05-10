@@ -1,11 +1,4 @@
-//import java.awt.*;
-//import java.awt.event.*;
-//import java.util.*;
-//import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
-import javax.swing.JFrame;
-
 
 public class Main {
     private static Board initialBoard;
@@ -68,10 +61,10 @@ public class Main {
                 System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by Black on round "+round+ConsoleColors.RESET);
             }
             root = new Node(null, 1000, initialBoard, null,-1000,1000);
-//            printArray1(initialBoard.getBoardState());
 
             if(initialBoard.hasPlayerLost(Piece.Red))
                 break;
+            initialBoard.printBoard();
 
             //Red turn
             aiPlayer2.calculateMove(root);
@@ -88,10 +81,7 @@ public class Main {
                 System.out.println(ConsoleColors.RED_BOLD+"Oh no Invalid move by RED on round "+round+ConsoleColors.RESET);
             }
             root = new Node(null, -1000, initialBoard, null,0,0);
-//            printArray1(initialBoard.getBoardState());
-            if(initialBoard.hasPlayerLost(Piece.Black))
-                break;
-
+            initialBoard.printBoard();
 
             round++;
         }
@@ -102,7 +92,7 @@ public class Main {
         if(initialBoard.hasPlayerLost(Piece.Red))
             System.out.println("BLACK PLAYER WON");
         initialBoard.printBoard();
-        System.out.println("Time: "+ (time2-time1));
+        System.out.println("Time: "+ (time2-time1)+"ms");
     }
     
 
@@ -140,7 +130,6 @@ public class Main {
     		while(player == Piece.Black){
     			System.out.println("Your Turn");
     			initialBoard.printBoard();
-//    			printArray1(initialBoard.getBoardState());
     			while(!validMove){
     				while(!valid1){
                 		System.out.print("Select which one of your pieces you want to move (ej.: 1,2): ");
@@ -207,7 +196,6 @@ public class Main {
     			
     		System.out.println("AI's Turn");
     		initialBoard.printBoard();
-//    		printArray1(initialBoard.getBoardState());
     		aiPlayer.calculateMove(nodeAI);
             bestMove = aiPlayer.getNextMove();
             for(int j=0; j < bestMove.getAction().size()-1; j++){
